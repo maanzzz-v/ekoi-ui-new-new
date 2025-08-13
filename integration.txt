@@ -1,0 +1,7 @@
+DATA SOURCE:
+
+When files are uploaded, /upload endpoint is called with the files.
+the uploaded files should be stored in a directory called as "resumes" which is done by the /upload endpoint.
+
+After the files are uploaded, the /ingest endpoint is called.
+
