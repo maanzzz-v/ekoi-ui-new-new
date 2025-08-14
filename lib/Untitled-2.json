@@ -1,0 +1,2323 @@
+{
+	"knownSymbols": {
+		"type { ResolvingMetadata": [
+			{
+				"name": "type { ResolvingMetadata",
+				"module": "next/dist/lib/metadata/types/metadata-interface.js",
+				"isDefault": true
+			}
+		],
+		"ResolvingViewport": [
+			{
+				"name": "ResolvingViewport",
+				"module": "next/dist/lib/metadata/types/metadata-interface.js",
+				"isDefault": true
+			}
+		],
+		"type { NextRequest": [
+			{
+				"name": "type { NextRequest",
+				"module": "next/server.js",
+				"isDefault": true
+			}
+		],
+		"cn": [
+			{
+				"name": "cn",
+				"module": "@/lib/utils",
+				"isDefault": false
+			},
+			{
+				"name": "cn",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/utils.ts",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"clsx": [
+			{
+				"name": "clsx",
+				"module": "clsx",
+				"isDefault": false
+			}
+		],
+		"type ClassValue": [
+			{
+				"name": "type ClassValue",
+				"module": "clsx",
+				"isDefault": false
+			}
+		],
+		"twMerge": [
+			{
+				"name": "twMerge",
+				"module": "tailwind-merge",
+				"isDefault": false
+			}
+		],
+		"AgentsPage": [
+			{
+				"name": "AgentsPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/agents-page.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "AgentsPage",
+				"module": "@/components/pages/agents-page",
+				"isDefault": false
+			}
+		],
+		"useState": [
+			{
+				"name": "useState",
+				"module": "react",
+				"isDefault": false
+			}
+		],
+		"Search": [
+			{
+				"name": "Search",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Filter": [
+			{
+				"name": "Filter",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Plus": [
+			{
+				"name": "Plus",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"ChevronLeft": [
+			{
+				"name": "ChevronLeft",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Button": [
+			{
+				"name": "Button",
+				"module": "@/components/ui/button",
+				"isDefault": false
+			}
+		],
+		"Input": [
+			{
+				"name": "Input",
+				"module": "@/components/ui/input",
+				"isDefault": false
+			}
+		],
+		"Card": [
+			{
+				"name": "Card",
+				"module": "@/components/ui/card",
+				"isDefault": false
+			}
+		],
+		"CardContent": [
+			{
+				"name": "CardContent",
+				"module": "@/components/ui/card",
+				"isDefault": false
+			}
+		],
+		"type { Agent": [
+			{
+				"name": "type { Agent",
+				"module": "@/lib/types",
+				"isDefault": true
+			}
+		],
+		"DataSourcing": [
+			{
+				"name": "DataSourcing",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/data-sourcing/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"DataSourcingPage": [
+			{
+				"name": "DataSourcingPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/data-sourcing-page.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "DataSourcingPage",
+				"module": "@/components/pages/data-sourcing-page",
+				"isDefault": false
+			}
+		],
+		"React": [
+			{
+				"name": "React",
+				"module": "react",
+				"isDefault": true,
+				"asDefinition": "* as React"
+			}
+		],
+		"Slot": [
+			{
+				"name": "Slot",
+				"module": "@radix-ui/react-slot",
+				"isDefault": false
+			}
+		],
+		"cva": [
+			{
+				"name": "cva",
+				"module": "class-variance-authority",
+				"isDefault": false
+			}
+		],
+		"type VariantProps": [
+			{
+				"name": "type VariantProps",
+				"module": "class-variance-authority",
+				"isDefault": false
+			}
+		],
+		"AgentWorkspace": [
+			{
+				"name": "AgentWorkspace",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/agent-workspace.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "AgentWorkspace",
+				"module": "@/components/pages/agent-workspace",
+				"isDefault": false
+			}
+		],
+		"ArrowLeft": [
+			{
+				"name": "ArrowLeft",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Settings": [
+			{
+				"name": "Settings",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"MessageSquare": [
+			{
+				"name": "MessageSquare",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Database": [
+			{
+				"name": "Database",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Tabs": [
+			{
+				"name": "Tabs",
+				"module": "@/components/ui/tabs",
+				"isDefault": false
+			}
+		],
+		"TabsContent": [
+			{
+				"name": "TabsContent",
+				"module": "@/components/ui/tabs",
+				"isDefault": false
+			}
+		],
+		"TabsList": [
+			{
+				"name": "TabsList",
+				"module": "@/components/ui/tabs",
+				"isDefault": false
+			}
+		],
+		"TabsTrigger": [
+			{
+				"name": "TabsTrigger",
+				"module": "@/components/ui/tabs",
+				"isDefault": false
+			}
+		],
+		"ChatTab": [
+			{
+				"name": "ChatTab",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/agent-workspace/chat-tab.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "ChatTab",
+				"module": "@/components/agent-workspace/chat-tab",
+				"isDefault": true
+			}
+		],
+		"DataHubTab": [
+			{
+				"name": "DataHubTab",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/agent-workspace/data-hub-tab.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "DataHubTab",
+				"module": "@/components/agent-workspace/data-hub-tab",
+				"isDefault": false
+			}
+		],
+		"TasksTab": [
+			{
+				"name": "TasksTab",
+				"module": "@/components/agent-workspace/tasks-tab",
+				"isDefault": false
+			},
+			{
+				"name": "TasksTab",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/agent-workspace/tasks-tab.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"type React": [
+			{
+				"name": "type React",
+				"module": "react",
+				"isDefault": true
+			}
+		],
+		"type { Metadata": [
+			{
+				"name": "type { Metadata",
+				"module": "next",
+				"isDefault": true
+			}
+		],
+		"Inter": [
+			{
+				"name": "Inter",
+				"module": "next/font/google",
+				"isDefault": false
+			}
+		],
+		"Sidebar": [
+			{
+				"name": "Sidebar",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/sidebar.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "Sidebar",
+				"module": "@/components/sidebar",
+				"isDefault": false
+			}
+		],
+		"Agents": [
+			{
+				"name": "Agents",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/agents/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"Home": [
+			{
+				"name": "Home",
+				"module": "lucide-react",
+				"isDefault": false
+			},
+			{
+				"name": "Home",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"LandingPage": [
+			{
+				"name": "LandingPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/landing-page.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "LandingPage",
+				"module": "@/components/pages/landing-page",
+				"isDefault": false
+			}
+		],
+		"CreateAgentPage": [
+			{
+				"name": "CreateAgentPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/create-agent-page.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "CreateAgentPage",
+				"module": "@/components/pages/create-agent-page",
+				"isDefault": false
+			}
+		],
+		"Save": [
+			{
+				"name": "Save",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"CardHeader": [
+			{
+				"name": "CardHeader",
+				"module": "@/components/ui/card",
+				"isDefault": false
+			}
+		],
+		"CardTitle": [
+			{
+				"name": "CardTitle",
+				"module": "@/components/ui/card",
+				"isDefault": false
+			}
+		],
+		"Label": [
+			{
+				"name": "Label",
+				"module": "@/components/ui/label",
+				"isDefault": false
+			}
+		],
+		"Textarea": [
+			{
+				"name": "Textarea",
+				"module": "@/components/ui/textarea",
+				"isDefault": false
+			}
+		],
+		"Select": [
+			{
+				"name": "Select",
+				"module": "@/components/ui/select",
+				"isDefault": false
+			}
+		],
+		"SelectContent": [
+			{
+				"name": "SelectContent",
+				"module": "@/components/ui/select",
+				"isDefault": false
+			}
+		],
+		"SelectItem": [
+			{
+				"name": "SelectItem",
+				"module": "@/components/ui/select",
+				"isDefault": false
+			}
+		],
+		"SelectTrigger": [
+			{
+				"name": "SelectTrigger",
+				"module": "@/components/ui/select",
+				"isDefault": false
+			}
+		],
+		"SelectValue": [
+			{
+				"name": "SelectValue",
+				"module": "@/components/ui/select",
+				"isDefault": false
+			}
+		],
+		"Alert": [
+			{
+				"name": "Alert",
+				"module": "@/components/ui/alert",
+				"isDefault": false
+			}
+		],
+		"AlertDescription": [
+			{
+				"name": "AlertDescription",
+				"module": "@/components/ui/alert",
+				"isDefault": false
+			}
+		],
+		"ConfigureAgentPage": [
+			{
+				"name": "ConfigureAgentPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/configure-agent-page.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "ConfigureAgentPage",
+				"module": "@/components/pages/configure-agent-page",
+				"isDefault": false
+			}
+		],
+		"useEffect": [
+			{
+				"name": "useEffect",
+				"module": "react",
+				"isDefault": true
+			}
+		],
+		"CheckboxPrimitive": [
+			{
+				"name": "CheckboxPrimitive",
+				"module": "@radix-ui/react-checkbox",
+				"isDefault": true,
+				"asDefinition": "* as CheckboxPrimitive"
+			}
+		],
+		"CheckIcon": [
+			{
+				"name": "CheckIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Send": [
+			{
+				"name": "Send",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"MoreHorizontal": [
+			{
+				"name": "MoreHorizontal",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"ScrollArea": [
+			{
+				"name": "ScrollArea",
+				"module": "@/components/ui/scroll-area",
+				"isDefault": false
+			}
+		],
+		"DropdownMenu": [
+			{
+				"name": "DropdownMenu",
+				"module": "@/components/ui/dropdown-menu",
+				"isDefault": false
+			}
+		],
+		"DropdownMenuContent": [
+			{
+				"name": "DropdownMenuContent",
+				"module": "@/components/ui/dropdown-menu",
+				"isDefault": false
+			}
+		],
+		"DropdownMenuItem": [
+			{
+				"name": "DropdownMenuItem",
+				"module": "@/components/ui/dropdown-menu",
+				"isDefault": false
+			}
+		],
+		"DropdownMenuTrigger": [
+			{
+				"name": "DropdownMenuTrigger",
+				"module": "@/components/ui/dropdown-menu",
+				"isDefault": false
+			}
+		],
+		"CanvasPage": [
+			{
+				"name": "CanvasPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/canvas-page.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "CanvasPage",
+				"module": "@/components/pages/canvas-page",
+				"isDefault": false
+			}
+		],
+		"useRef": [
+			{
+				"name": "useRef",
+				"module": "react",
+				"isDefault": true
+			}
+		],
+		"useCallback": [
+			{
+				"name": "useCallback",
+				"module": "react",
+				"isDefault": true
+			}
+		],
+		"Separator": [
+			{
+				"name": "Separator",
+				"module": "@/components/ui/separator",
+				"isDefault": false
+			}
+		],
+		"Trash2": [
+			{
+				"name": "Trash2",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"FileText": [
+			{
+				"name": "FileText",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Cloud": [
+			{
+				"name": "Cloud",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"HardDrive": [
+			{
+				"name": "HardDrive",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"XCircle": [
+			{
+				"name": "XCircle",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"DataStorageConnectorDialog": [
+			{
+				"name": "DataStorageConnectorDialog",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/data-storage-connector-dialog.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "DataStorageConnectorDialog",
+				"module": "@/components/data-storage-connector-dialog",
+				"isDefault": false
+			}
+		],
+		"type { Project": [
+			{
+				"name": "type { Project",
+				"module": "@/lib/types",
+				"isDefault": true
+			}
+		],
+		"CreateAgent": [
+			{
+				"name": "CreateAgent",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/agents/create/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"DayButton": [
+			{
+				"name": "DayButton",
+				"module": "react-day-picker",
+				"isDefault": false
+			}
+		],
+		"DayPicker": [
+			{
+				"name": "DayPicker",
+				"module": "react-day-picker",
+				"isDefault": false
+			}
+		],
+		"getDefaultClassNames": [
+			{
+				"name": "getDefaultClassNames",
+				"module": "react-day-picker",
+				"isDefault": false
+			}
+		],
+		"buttonVariants": [
+			{
+				"name": "buttonVariants",
+				"module": "@/components/ui/button",
+				"isDefault": false
+			}
+		],
+		"Projects": [
+			{
+				"name": "Projects",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/projects/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"ProjectsPage": [
+			{
+				"name": "ProjectsPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/projects-page.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "ProjectsPage",
+				"module": "@/components/pages/projects-page",
+				"isDefault": false
+			}
+		],
+		"notFound": [
+			{
+				"name": "notFound",
+				"module": "next/navigation",
+				"isDefault": false
+			}
+		],
+		"useRouter": [
+			{
+				"name": "useRouter",
+				"module": "next/navigation",
+				"isDefault": false
+			}
+		],
+		"use": [
+			{
+				"name": "use",
+				"module": "react",
+				"isDefault": false
+			}
+		],
+		"CreateProject": [
+			{
+				"name": "CreateProject",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/projects/create/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"ConfigureAgent": [
+			{
+				"name": "ConfigureAgent",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/agents/[id]/configure/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"ProjectCanvasPage": [
+			{
+				"name": "ProjectCanvasPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/projects/[id]/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"DropdownMenuPrimitive": [
+			{
+				"name": "DropdownMenuPrimitive",
+				"module": "@radix-ui/react-dropdown-menu",
+				"isDefault": true,
+				"asDefinition": "* as DropdownMenuPrimitive"
+			}
+		],
+		"ChevronRightIcon": [
+			{
+				"name": "ChevronRightIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"CircleIcon": [
+			{
+				"name": "CircleIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"FileUploadDialog": [
+			{
+				"name": "FileUploadDialog",
+				"module": "@/components/file-upload-dialog",
+				"isDefault": false
+			},
+			{
+				"name": "FileUploadDialog",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/file-upload-dialog.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"Dialog": [
+			{
+				"name": "Dialog",
+				"module": "@/components/ui/dialog",
+				"isDefault": false
+			},
+			{
+				"name": "Dialog",
+				"module": "@                              <span className=",
+				"isDefault": false
+			}
+		],
+		"DialogContent": [
+			{
+				"name": "DialogContent",
+				"module": "@/components/ui/dialog",
+				"isDefault": false
+			},
+			{
+				"name": "DialogContent",
+				"module": "@                              <span className=",
+				"isDefault": false
+			}
+		],
+		"DialogHeader": [
+			{
+				"name": "DialogHeader",
+				"module": "@/components/ui/dialog",
+				"isDefault": false
+			},
+			{
+				"name": "DialogHeader",
+				"module": "@                              <span className=",
+				"isDefault": false
+			}
+		],
+		"DialogTitle": [
+			{
+				"name": "DialogTitle",
+				"module": "@/components/ui/dialog",
+				"isDefault": false
+			},
+			{
+				"name": "DialogTitle",
+				"module": "@                              <span className=",
+				"isDefault": false
+			}
+		],
+		"Progress": [
+			{
+				"name": "Progress",
+				"module": "@/components/ui/progress",
+				"isDefault": false
+			}
+		],
+		"Upload": [
+			{
+				"name": "Upload",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"File": [
+			{
+				"name": "File",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"X": [
+			{
+				"name": "X",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Image": [
+			{
+				"name": "Image",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"DialogPrimitive": [
+			{
+				"name": "DialogPrimitive",
+				"module": "@radix-ui/react-dialog",
+				"isDefault": true,
+				"asDefinition": "* as DialogPrimitive"
+			}
+		],
+		"XIcon": [
+			{
+				"name": "XIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Play": [
+			{
+				"name": "Play",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Users": [
+			{
+				"name": "Users",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"ArrowRight": [
+			{
+				"name": "ArrowRight",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Checkbox": [
+			{
+				"name": "Checkbox",
+				"module": "@/components/ui/checkbox",
+				"isDefault": false
+			}
+		],
+		"Folder": [
+			{
+				"name": "Folder",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Eye": [
+			{
+				"name": "Eye",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"ImageIcon": [
+			{
+				"name": "ImageIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Check": [
+			{
+				"name": "Check",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Table": [
+			{
+				"name": "Table",
+				"module": "@/components/ui/table",
+				"isDefault": false
+			}
+		],
+		"TableBody": [
+			{
+				"name": "TableBody",
+				"module": "@/components/ui/table",
+				"isDefault": false
+			}
+		],
+		"TableCell": [
+			{
+				"name": "TableCell",
+				"module": "@/components/ui/table",
+				"isDefault": false
+			}
+		],
+		"TableHead": [
+			{
+				"name": "TableHead",
+				"module": "@/components/ui/table",
+				"isDefault": false
+			}
+		],
+		"TableHeader": [
+			{
+				"name": "TableHeader",
+				"module": "@/components/ui/table",
+				"isDefault": false
+			}
+		],
+		"TableRow": [
+			{
+				"name": "TableRow",
+				"module": "@/components/ui/table",
+				"isDefault": false
+			}
+		],
+		"Badge": [
+			{
+				"name": "Badge",
+				"module": "@/components/ui/badge",
+				"isDefault": false
+			}
+		],
+		"DialogTrigger": [
+			{
+				"name": "DialogTrigger",
+				"module": "@/components/ui/dialog",
+				"isDefault": false
+			},
+			{
+				"name": "DialogTrigger",
+				"module": "@                              <span className=",
+				"isDefault": false
+			}
+		],
+		"DataFiltersComponent": [
+			{
+				"name": "DataFiltersComponent",
+				"module": "@/components/data-filters",
+				"isDefault": false
+			},
+			{
+				"name": "DataFiltersComponent",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/data-filters.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"applyDataFilters": [
+			{
+				"name": "applyDataFilters",
+				"module": "@/components/data-filters",
+				"isDefault": false
+			},
+			{
+				"name": "applyDataFilters",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/data-filters.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"type DataFilters": [
+			{
+				"name": "type DataFilters",
+				"module": "@/components/data-filters",
+				"isDefault": false
+			}
+		],
+		"LabelPrimitive": [
+			{
+				"name": "LabelPrimitive",
+				"module": "@radix-ui/react-label",
+				"isDefault": true,
+				"asDefinition": "* as LabelPrimitive"
+			}
+		],
+		"DataFilters": [
+			{
+				"name": "DataFilters",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/data-filters.tsx",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"Calendar": [
+			{
+				"name": "Calendar",
+				"module": "@/components/ui/calendar",
+				"isDefault": false
+			},
+			{
+				"name": "Calendar",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Popover": [
+			{
+				"name": "Popover",
+				"module": "@/components/ui/popover",
+				"isDefault": false
+			}
+		],
+		"PopoverContent": [
+			{
+				"name": "PopoverContent",
+				"module": "@/components/ui/popover",
+				"isDefault": false
+			}
+		],
+		"PopoverTrigger": [
+			{
+				"name": "PopoverTrigger",
+				"module": "@/components/ui/popover",
+				"isDefault": false
+			}
+		],
+		"Calendar as CalendarComponent": [
+			{
+				"name": "Calendar as CalendarComponent",
+				"module": "@/components/ui/calendar",
+				"isDefault": false
+			}
+		],
+		"Slider": [
+			{
+				"name": "Slider",
+				"module": "@/components/ui/slider",
+				"isDefault": false
+			}
+		],
+		"format": [
+			{
+				"name": "format",
+				"module": "date-fns",
+				"isDefault": false
+			}
+		],
+		"TooltipPrimitive": [
+			{
+				"name": "TooltipPrimitive",
+				"module": "@radix-ui/react-tooltip",
+				"isDefault": true,
+				"asDefinition": "* as TooltipPrimitive"
+			}
+		],
+		"ThemeProvider": [
+			{
+				"name": "ThemeProvider",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/theme-provider.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"ProgressPrimitive": [
+			{
+				"name": "ProgressPrimitive",
+				"module": "@radix-ui/react-progress",
+				"isDefault": true,
+				"asDefinition": "* as ProgressPrimitive"
+			}
+		],
+		"ScrollAreaPrimitive": [
+			{
+				"name": "ScrollAreaPrimitive",
+				"module": "@radix-ui/react-scroll-area",
+				"isDefault": true,
+				"asDefinition": "* as ScrollAreaPrimitive"
+			}
+		],
+		"SliderPrimitive": [
+			{
+				"name": "SliderPrimitive",
+				"module": "@radix-ui/react-slider",
+				"isDefault": true,
+				"asDefinition": "* as SliderPrimitive"
+			}
+		],
+		"SeparatorPrimitive": [
+			{
+				"name": "SeparatorPrimitive",
+				"module": "@radix-ui/react-separator",
+				"isDefault": true,
+				"asDefinition": "* as SeparatorPrimitive"
+			}
+		],
+		"SelectPrimitive": [
+			{
+				"name": "SelectPrimitive",
+				"module": "@radix-ui/react-select",
+				"isDefault": true,
+				"asDefinition": "* as SelectPrimitive"
+			}
+		],
+		"ChevronDownIcon": [
+			{
+				"name": "ChevronDownIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"ChevronUpIcon": [
+			{
+				"name": "ChevronUpIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"PopoverPrimitive": [
+			{
+				"name": "PopoverPrimitive",
+				"module": "@radix-ui/react-popover",
+				"isDefault": true,
+				"asDefinition": "* as PopoverPrimitive"
+			}
+		],
+		"TabsPrimitive": [
+			{
+				"name": "TabsPrimitive",
+				"module": "@radix-ui/react-tabs",
+				"isDefault": true,
+				"asDefinition": "* as TabsPrimitive"
+			}
+		],
+		"usePathname": [
+			{
+				"name": "usePathname",
+				"module": "next/navigation",
+				"isDefault": false
+			}
+		],
+		"Bot": [
+			{
+				"name": "Bot",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"FolderOpen": [
+			{
+				"name": "FolderOpen",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"HelpCircle": [
+			{
+				"name": "HelpCircle",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"User": [
+			{
+				"name": "User",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Pause": [
+			{
+				"name": "Pause",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"CheckCircle": [
+			{
+				"name": "CheckCircle",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"LayoutGrid": [
+			{
+				"name": "LayoutGrid",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"ArrowUpDown": [
+			{
+				"name": "ArrowUpDown",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Minus": [
+			{
+				"name": "Minus",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"FileOutput": [
+			{
+				"name": "FileOutput",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Bell": [
+			{
+				"name": "Bell",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"DialogFooter": [
+			{
+				"name": "DialogFooter",
+				"module": "@/components/ui/dialog",
+				"isDefault": false
+			}
+		],
+		"{ useState": [
+			{
+				"name": "{ useState",
+				"module": "react",
+				"isDefault": true
+			}
+		],
+		"Zap": [
+			{
+				"name": "Zap",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Link": [
+			{
+				"name": "Link",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Video": [
+			{
+				"name": "Video",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Music": [
+			{
+				"name": "Music",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Archive": [
+			{
+				"name": "Archive",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"CheckCircle2": [
+			{
+				"name": "CheckCircle2",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"AlertTriangle": [
+			{
+				"name": "AlertTriangle",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Shuffle": [
+			{
+				"name": "Shuffle",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"BarChart3": [
+			{
+				"name": "BarChart3",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"FileSpreadsheet": [
+			{
+				"name": "FileSpreadsheet",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Calculator": [
+			{
+				"name": "Calculator",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Target": [
+			{
+				"name": "Target",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"ClipboardList": [
+			{
+				"name": "ClipboardList",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"BookOpen": [
+			{
+				"name": "BookOpen",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"PieChart": [
+			{
+				"name": "PieChart",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"TrendingUp": [
+			{
+				"name": "TrendingUp",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"FileBarChart": [
+			{
+				"name": "FileBarChart",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Mail": [
+			{
+				"name": "Mail",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Workflow": [
+			{
+				"name": "Workflow",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"GitBranch": [
+			{
+				"name": "GitBranch",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"AgentWorkspacePage": [
+			{
+				"name": "AgentWorkspacePage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/agents/[id]/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"resumeApi": [
+			{
+				"name": "resumeApi",
+				"module": "@/lib/api",
+				"isDefault": false
+			},
+			{
+				"name": "resumeApi",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "const",
+				"isDefault": false
+			}
+		],
+		"type Resume": [
+			{
+				"name": "type Resume",
+				"module": "@/lib/api",
+				"isDefault": false
+			}
+		],
+		"useResumeUpload": [
+			{
+				"name": "useResumeUpload",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useResumeUpload.ts",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "useResumeUpload",
+				"module": "@/lib/hooks/useResumeUpload",
+				"isDefault": false
+			}
+		],
+		"getUploadStatusMessage": [
+			{
+				"name": "getUploadStatusMessage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useResumeUpload.ts",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "getUploadStatusMessage",
+				"module": "@/lib/hooks/useResumeUpload",
+				"isDefault": false
+			}
+		],
+		"UploadState": [
+			{
+				"name": "UploadState",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useResumeUpload.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"UseResumeUploadReturn": [
+			{
+				"name": "UseResumeUploadReturn",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useResumeUpload.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"UploadStatusProps": [
+			{
+				"name": "UploadStatusProps",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useResumeUpload.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"getUploadProgressText": [
+			{
+				"name": "getUploadProgressText",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useResumeUpload.ts",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"useShortlisting": [
+			{
+				"name": "useShortlisting",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useShortlisting.ts",
+				"type": "function",
+				"isDefault": true
+			},
+			{
+				"name": "useShortlisting",
+				"module": "@/lib/hooks/useShortlisting",
+				"isDefault": false
+			}
+		],
+		"Brain": [
+			{
+				"name": "Brain",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Clock": [
+			{
+				"name": "Clock",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Award": [
+			{
+				"name": "Award",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Phone": [
+			{
+				"name": "Phone",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"Download": [
+			{
+				"name": "Download",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"RefreshCw": [
+			{
+				"name": "RefreshCw",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"ShortlistingPage": [
+			{
+				"name": "ShortlistingPage",
+				"module": "@/components/shortlisting-page",
+				"isDefault": false
+			},
+			{
+				"name": "ShortlistingPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/shortlisting-page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"DemoPage": [
+			{
+				"name": "DemoPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/demo/page.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"ShortlistingOptions": [
+			{
+				"name": "ShortlistingOptions",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/shortlisting-service.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ShortlistingResult": [
+			{
+				"name": "ShortlistingResult",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/shortlisting-service.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"JobRequirement": [
+			{
+				"name": "JobRequirement",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/shortlisting-service.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"shortlistingService": [
+			{
+				"name": "shortlistingService",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/shortlisting-service.ts",
+				"type": "const",
+				"isDefault": true
+			}
+		],
+		"createShortlistingService": [
+			{
+				"name": "createShortlistingService",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/shortlisting-service.ts",
+				"type": "const",
+				"isDefault": false
+			}
+		],
+		"UseShortlistingOptions": [
+			{
+				"name": "UseShortlistingOptions",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useShortlisting.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ShortlistingState": [
+			{
+				"name": "ShortlistingState",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/hooks/useShortlisting.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"MessageCircle": [
+			{
+				"name": "MessageCircle",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"SearchMatch": [
+			{
+				"name": "SearchMatch",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			},
+			{
+				"name": "SearchMatch",
+				"module": "@/lib/api",
+				"isDefault": false
+			}
+		],
+		"ChatMessage": [
+			{
+				"name": "ChatMessage",
+				"module": "@/lib/api",
+				"isDefault": false
+			},
+			{
+				"name": "ChatMessage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ChatSession": [
+			{
+				"name": "ChatSession",
+				"module": "@/lib/api",
+				"isDefault": false
+			},
+			{
+				"name": "ChatSession",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"Loader2": [
+			{
+				"name": "Loader2",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"AlertCircle": [
+			{
+				"name": "AlertCircle",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"useSearchParams": [
+			{
+				"name": "useSearchParams",
+				"module": "next/navigation",
+				"isDefault": false
+			}
+		],
+		"Briefcase": [
+			{
+				"name": "Briefcase",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"chatSessionManager": [
+			{
+				"name": "chatSessionManager",
+				"module": "@/lib/chat-session-manager",
+				"isDefault": false
+			},
+			{
+				"name": "chatSessionManager",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/chat-session-manager.ts",
+				"type": "const",
+				"isDefault": true
+			}
+		],
+		"chatUtils": [
+			{
+				"name": "chatUtils",
+				"module": "@/lib/chat-session-manager",
+				"isDefault": false
+			},
+			{
+				"name": "chatUtils",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/chat-session-manager.ts",
+				"type": "const",
+				"isDefault": false
+			}
+		],
+		"SearchHistoryEntry": [
+			{
+				"name": "SearchHistoryEntry",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/chat-session-manager.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"SessionMetrics": [
+			{
+				"name": "SessionMetrics",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/chat-session-manager.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"EnhancedChatSessionManager": [
+			{
+				"name": "EnhancedChatSessionManager",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/chat-session-manager.ts",
+				"type": "class",
+				"isDefault": false
+			}
+		],
+		"data": [
+			{
+				"name": "data",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/agent-workspace/tasks-tab-new.tsx",
+				"isDefault": false
+			}
+		],
+		"your": [
+			{
+				"name": "your",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/agent-workspace/tasks-tab-new.tsx",
+				"isDefault": false
+			}
+		],
+		"shortlisting": [
+			{
+				"name": "shortlisting",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/agent-workspace/tasks-tab.tsx",
+				"isDefault": false
+			}
+		],
+		"EnhancedCandidateCard": [
+			{
+				"name": "EnhancedCandidateCard",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/enhanced-ui-components.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"QualityIndicators": [
+			{
+				"name": "QualityIndicators",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"SearchInsights": [
+			{
+				"name": "SearchInsights",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ExperienceChart": [
+			{
+				"name": "ExperienceChart",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/enhanced-ui-components.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"SkillTagsCloud": [
+			{
+				"name": "SkillTagsCloud",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/enhanced-ui-components.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"FollowUpQuestions": [
+			{
+				"name": "FollowUpQuestions",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/enhanced-ui-components.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"QuickActionsPanel": [
+			{
+				"name": "QuickActionsPanel",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/enhanced-ui-components.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"UIComponentsRenderer": [
+			{
+				"name": "UIComponentsRenderer",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/enhanced-ui-components.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"ConversationFlowRenderer": [
+			{
+				"name": "ConversationFlowRenderer",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/enhanced-ui-components.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"UploadResponse": [
+			{
+				"name": "UploadResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			},
+			{
+				"name": "UploadResponse",
+				"module": "@/lib/api",
+				"isDefault": false
+			}
+		],
+		"Resume": [
+			{
+				"name": "Resume",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			},
+			{
+				"name": "Resume",
+				"module": "@/lib/api",
+				"isDefault": false
+			}
+		],
+		"HealthResponse": [
+			{
+				"name": "HealthResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"DetailedHealthResponse": [
+			{
+				"name": "DetailedHealthResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"LLMProviderInfo": [
+			{
+				"name": "LLMProviderInfo",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ResumeExtractedInfo": [
+			{
+				"name": "ResumeExtractedInfo",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"BasicSearchResponse": [
+			{
+				"name": "BasicSearchResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"CandidateCard": [
+			{
+				"name": "CandidateCard",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"UIComponents": [
+			{
+				"name": "UIComponents",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ConversationFlow": [
+			{
+				"name": "ConversationFlow",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"QuickAction": [
+			{
+				"name": "QuickAction",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ResponseMetadata": [
+			{
+				"name": "ResponseMetadata",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"EnhancedChatSearchRequest": [
+			{
+				"name": "EnhancedChatSearchRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"EnhancedChatSearchResponse": [
+			{
+				"name": "EnhancedChatSearchResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"QueryAnalysisRequest": [
+			{
+				"name": "QueryAnalysisRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"IntelligenceAnalysis": [
+			{
+				"name": "IntelligenceAnalysis",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"QueryAnalysisResponse": [
+			{
+				"name": "QueryAnalysisResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"QueryOptimizationRequest": [
+			{
+				"name": "QueryOptimizationRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"QueryOptimizationResponse": [
+			{
+				"name": "QueryOptimizationResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ListSessionsResponse": [
+			{
+				"name": "ListSessionsResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"SessionSearchRequest": [
+			{
+				"name": "SessionSearchRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"SessionSearchResponse": [
+			{
+				"name": "SessionSearchResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"apiService": [
+			{
+				"name": "apiService",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api-complex.ts",
+				"type": "const",
+				"isDefault": false
+			}
+		],
+		"metadata": [
+			{
+				"name": "metadata",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/layout.tsx",
+				"type": "const",
+				"isDefault": false
+			}
+		],
+		"RootLayout": [
+			{
+				"name": "RootLayout",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/app/layout.tsx",
+				"type": "function",
+				"isDefault": true
+			}
+		],
+		"AuthProvider": [
+			{
+				"name": "AuthProvider",
+				"module": "@/lib/auth/auth-context",
+				"isDefault": false
+			}
+		],
+		"AuthGuard": [
+			{
+				"name": "AuthGuard",
+				"module": "@/lib/auth/auth-guard",
+				"isDefault": false
+			}
+		],
+		"ConditionalLayout": [
+			{
+				"name": "ConditionalLayout",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/conditional-layout.tsx",
+				"type": "function",
+				"isDefault": false
+			},
+			{
+				"name": "ConditionalLayout",
+				"module": "@/components/conditional-layout",
+				"isDefault": false
+			}
+		],
+		"LoginPage": [
+			{
+				"name": "LoginPage",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/components/pages/login-page.tsx",
+				"type": "function",
+				"isDefault": false
+			}
+		],
+		"useAuth": [
+			{
+				"name": "useAuth",
+				"module": "@/lib/auth/auth-context",
+				"isDefault": false
+			}
+		],
+		"CardDescription": [
+			{
+				"name": "CardDescription",
+				"module": "@/components/ui/card",
+				"isDefault": false
+			}
+		],
+		"EyeIcon": [
+			{
+				"name": "EyeIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"EyeOffIcon": [
+			{
+				"name": "EyeOffIcon",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"LogOut": [
+			{
+				"name": "LogOut",
+				"module": "lucide-react",
+				"isDefault": false
+			}
+		],
+		"config": [
+			{
+				"name": "config",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/config.ts",
+				"type": "const",
+				"isDefault": true
+			}
+		],
+		"PageType": [
+			{
+				"name": "PageType",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/types.ts",
+				"type": "type",
+				"isDefault": false
+			}
+		],
+		"Agent": [
+			{
+				"name": "Agent",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/types.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"Project": [
+			{
+				"name": "Project",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/types.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"JDUploadResponse": [
+			{
+				"name": "JDUploadResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"JDSearchRequest": [
+			{
+				"name": "JDSearchRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"JDSearchResponse": [
+			{
+				"name": "JDSearchResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"JDFollowUpRequest": [
+			{
+				"name": "JDFollowUpRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"JDFollowUpResponse": [
+			{
+				"name": "JDFollowUpResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"JDSearchResultsResponse": [
+			{
+				"name": "JDSearchResultsResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"SearchRequest": [
+			{
+				"name": "SearchRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"SearchResponse": [
+			{
+				"name": "SearchResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"CreateSessionRequest": [
+			{
+				"name": "CreateSessionRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"CreateSessionResponse": [
+			{
+				"name": "CreateSessionResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"SessionsListResponse": [
+			{
+				"name": "SessionsListResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"SessionResponse": [
+			{
+				"name": "SessionResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"FollowUpRequest": [
+			{
+				"name": "FollowUpRequest",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"FollowUpResponse": [
+			{
+				"name": "FollowUpResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"ListResumesResponse": [
+			{
+				"name": "ListResumesResponse",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"simplifiedApiService": [
+			{
+				"name": "simplifiedApiService",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"type": "const",
+				"isDefault": false
+			}
+		],
+		"export": [
+			{
+				"name": "export",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/lib/api.ts",
+				"isDefault": false
+			}
+		],
+		"PageProps": [
+			{
+				"name": "PageProps",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/.next/types/app/page.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"LayoutProps": [
+			{
+				"name": "LayoutProps",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/.next/types/app/page.ts",
+				"type": "interface",
+				"isDefault": false
+			}
+		],
+		"unstable_cacheLife": [
+			{
+				"name": "unstable_cacheLife",
+				"path": "/home/Maanu/Documents/RoR Internship/UI-REPO/.next/types/cache-life.d.ts",
+				"type": "function",
+				"isDefault": false
+			}
+		]
+	}
+}

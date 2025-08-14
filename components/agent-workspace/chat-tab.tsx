@@ -187,51 +187,108 @@ export function ChatTab({ agent }: ChatTabProps) {
       let response;
       
       if (isFollowUp && selectedChat.messages.length > 1) {
-        // Use follow-up endpoint
-        response = await resumeApi.askFollowUp(selectedChat.id, {
-          question: messageContent
-        })
-        
-        const assistantMessage: ChatMessage = {
-          id: `assistant-${Date.now()}`,
-          type: 'assistant',
-          content: response.answer,
-          timestamp: new Date().toISOString()
-        }
+        // Check if we have a job description uploaded for JD follow-up
+        if (selectedChat.hasUploadedFile) {
+          // Use JD follow-up endpoint
+          response = await resumeApi.askJDFollowUp({
+            session_id: selectedChat.id,
+            question: messageContent
+          })
+          
+          const assistantMessage: ChatMessage = {
+            id: `assistant-${Date.now()}`,
+            type: 'assistant',
+            content: response.answer,
+            timestamp: new Date().toISOString()
+          }
 
-        setSelectedChat(prev => prev ? {
-          ...prev,
-          messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
-        } : null)
+          setSelectedChat(prev => prev ? {
+            ...prev,
+            messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
+          } : null)
+        } else {
+          // Use regular follow-up endpoint
+          response = await resumeApi.askFollowUp(selectedChat.id, {
+            question: messageContent
+          })
+          
+          const assistantMessage: ChatMessage = {
+            id: `assistant-${Date.now()}`,
+            type: 'assistant',
+            content: response.answer,
+            timestamp: new Date().toISOString()
+          }
+
+          setSelectedChat(prev => prev ? {
+            ...prev,
+            messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
+          } : null)
+        }
       } else {
-        // Use search endpoint
-        const searchResponse = await resumeApi.chatSearch({
-          message: messageContent
-        })
-        
-        let responseContent = searchResponse.message || `Found ${searchResponse.total_results} candidates.`
-        
-        if (searchResponse.matches && searchResponse.matches.length > 0) {
-          responseContent += "\n\nTop candidates:\n"
-          searchResponse.matches.slice(0, 3).forEach((match, index) => {
-            responseContent += `\n${index + 1}. ${match.extracted_info.name || 'Candidate'} (Score: ${(match.score * 100).toFixed(1)}%)`
-            if (match.extracted_info.skills.length > 0) {
-              responseContent += `\n   Skills: ${match.extracted_info.skills.slice(0, 5).join(', ')}`
+        // Check if we have a job description uploaded for JD search
+        if (selectedChat.hasUploadedFile) {
+          // Use JD search endpoint
+          const searchResponse = await resumeApi.searchWithJobDescription({
+            session_id: selectedChat.id,
+            top_k: 10,
+            filters: {
+              query: messageContent // Include the search query in filters
             }
           })
-        }
+          
+          let responseContent = `Found ${searchResponse.total_results} candidates matching the job description and your query.`
+          
+          if (searchResponse.matches && searchResponse.matches.length > 0) {
+            responseContent += "\n\nTop candidates:\n"
+            searchResponse.matches.slice(0, 3).forEach((match, index) => {
+              responseContent += `\n${index + 1}. ${match.extracted_info.name || 'Candidate'} (Score: ${(match.score * 100).toFixed(1)}%)`
+              if (match.extracted_info.skills.length > 0) {
+                responseContent += `\n   Skills: ${match.extracted_info.skills.slice(0, 5).join(', ')}`
+              }
+            })
+          }
 
-        const assistantMessage: ChatMessage = {
-          id: `assistant-${Date.now()}`,
-          type: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString()
-        }
+          const assistantMessage: ChatMessage = {
+            id: `assistant-${Date.now()}`,
+            type: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString()
+          }
 
-        setSelectedChat(prev => prev ? {
-          ...prev,
-          messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
-        } : null)
+          setSelectedChat(prev => prev ? {
+            ...prev,
+            messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
+          } : null)
+        } else {
+          // Use regular search endpoint
+          const searchResponse = await resumeApi.chatSearch({
+            message: messageContent
+          })
+          
+          let responseContent = searchResponse.message || `Found ${searchResponse.total_results} candidates.`
+          
+          if (searchResponse.matches && searchResponse.matches.length > 0) {
+            responseContent += "\n\nTop candidates:\n"
+            searchResponse.matches.slice(0, 3).forEach((match, index) => {
+              responseContent += `\n${index + 1}. ${match.extracted_info.name || 'Candidate'} (Score: ${(match.score * 100).toFixed(1)}%)`
+              if (match.extracted_info.skills.length > 0) {
+                responseContent += `\n   Skills: ${match.extracted_info.skills.slice(0, 5).join(', ')}`
+              }
+            })
+          }
+
+          const assistantMessage: ChatMessage = {
+            id: `assistant-${Date.now()}`,
+            type: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString()
+          }
+
+          setSelectedChat(prev => prev ? {
+            ...prev,
+            messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
+          } : null)
+        }
       }
     } catch (error) {
       console.error('Failed to send message:', error)
@@ -269,16 +326,16 @@ export function ChatTab({ agent }: ChatTabProps) {
     const file = event.target.files?.[0]
     if (!file || !selectedChat) return
 
-    if (file.type !== 'application/pdf') {
-      alert('Please select a PDF file')
+    if (file.type !== 'application/pdf' && file.type !== 'text/plain') {
+      alert('Please select a PDF or TXT file')
       return
     }
 
     setIsProcessingFile(true)
 
     try {
-      // Simulate API processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Upload to backend using the real API
+      const response = await resumeApi.uploadJobDescription(selectedChat.id, file)
       
       // Save file state to localStorage
       const fileStates = JSON.parse(localStorage.getItem('chatFileStates') || '{}')
@@ -300,6 +357,20 @@ export function ChatTab({ agent }: ChatTabProps) {
         hasUploadedFile: true,
         fileName: file.name
       } : null)
+
+      // Add success message to chat
+      const analysisMessage: ChatMessage = {
+        id: `analysis-${Date.now()}`,
+        type: 'assistant',
+        content: `Job description "${response.file_name}" uploaded successfully! I can now help you find candidates that match the requirements from this job description.`,
+        timestamp: new Date().toISOString()
+      }
+      
+      // Add the analysis message to the chat
+      setSelectedChat(prev => prev ? {
+        ...prev,
+        messages: [...(prev.messages || []), analysisMessage]
+      } : null)
       
     } catch (error) {
       console.error('Error processing file:', error)
@@ -311,36 +382,55 @@ export function ChatTab({ agent }: ChatTabProps) {
     event.target.value = ''
   }
 
-  const handleDownloadResults = () => {
-    // TODO: Implement actual download when backend is ready
-    // For now, create a dummy download
-    const dummyData = `Job Description Analysis Results
-    
-File: ${selectedChat?.fileName}
-Processed: ${new Date().toLocaleString()}
+  const handleDownloadResults = async () => {
+    if (!selectedChat || !selectedChat.hasUploadedFile) {
+      alert('No job description uploaded to download results for')
+      return
+    }
 
-Key Requirements Extracted:
-- Technical Skills: React, Node.js, TypeScript
-- Experience Level: 3-5 years
-- Education: Bachelor's degree preferred
-- Soft Skills: Team collaboration, Communication
+    try {
+      // Get search results from the backend
+      const results = await resumeApi.getJDSearchResults(selectedChat.id)
+      
+      // Create downloadable content
+      const downloadContent = `Job Description Search Results
+      
+Session ID: ${results.session_id}
+Job Description ID: ${results.search_results.jd_id}
+Job Description File: ${results.search_results.jd_filename}
+Total Results: ${results.search_results.total_matches}
+Generated: ${new Date().toLocaleString()}
 
-Recommended Candidate Filters:
-- Skills match threshold: 80%
-- Experience range: 2-6 years
-- Location: Remote/Hybrid acceptable
+Job Description:
+${results.search_results.jd_text}
 
-This is a placeholder result. Actual analysis will be provided by the backend API.`
-
-    const blob = new Blob([dummyData], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `job_analysis_${selectedChat?.fileName?.replace('.pdf', '')}_results.txt`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+Search Results:
+${results.search_results.matches.map((match: any, index: number) => `
+${index + 1}. ${match.extracted_info.name || 'Candidate'}
+   Score: ${(match.score * 100).toFixed(1)}%
+   Skills: ${match.extracted_info.skills.join(', ')}
+   Experience: ${Array.isArray(match.extracted_info.experience) ? match.extracted_info.experience.join(', ') : (match.extracted_info.experience || 'Not specified')}
+   Location: ${match.extracted_info.location || 'Not specified'}
+   Education: ${match.extracted_info.education || 'Not specified'}
+   
+`).join('')}
+`
+      
+      // Create and download the file
+      const blob = new Blob([downloadContent], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `jd-search-results-${selectedChat.id}-${new Date().toISOString().split('T')[0]}.txt`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      
+    } catch (error) {
+      console.error('Error downloading results:', error)
+      alert('Error downloading results. Please try again.')
+    }
   }
 
   const filteredSessions = sessions.filter(session =>

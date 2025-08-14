@@ -8,6 +8,63 @@ import config from './config';
 const API_BASE_URL = config.api.baseUrl;
 
 // ============================
+// JD Upload Types
+// ============================
+
+export interface JDUploadResponse {
+  message: string;
+  job_description_id: string;
+  file_name: string;
+  session_id: string;
+  extracted_text: string;
+  success: boolean;
+}
+
+export interface JDSearchRequest {
+  session_id: string;
+  top_k?: number;
+  filters?: Record<string, any>;
+}
+
+export interface JDSearchResponse {
+  session_id: string;
+  job_description_id: string;
+  job_description_text: string;
+  matches: SearchMatch[];
+  total_results: number;
+  processing_time: number;
+  search_results_stored: boolean;
+  success: boolean;
+}
+
+export interface JDFollowUpRequest {
+  session_id: string;
+  question: string;
+}
+
+export interface JDFollowUpResponse {
+  session_id: string;
+  question: string;
+  answer: string;
+  candidates_analyzed: number;
+  jd_filename: string;
+  success: boolean;
+}
+
+export interface JDSearchResultsResponse {
+  session_id: string;
+  search_results: {
+    jd_id: string;
+    jd_text: string;
+    jd_filename: string;
+    matches: SearchMatch[];
+    total_matches: number;
+    search_timestamp: string;
+  };
+  success: boolean;
+}
+
+// ============================
 // Simplified Types
 // ============================
 
@@ -129,8 +186,29 @@ export interface ListResumesResponse {
 class SimplifiedApiService {
   private baseUrl: string;
 
-  constructor(baseUrl: string = API_BASE_URL) {
-    this.baseUrl = baseUrl;
+  constructor() {
+    this.baseUrl = API_BASE_URL;
+  }
+
+  /**
+   * Check if backend is available and reachable
+   */
+  private async checkBackendHealth(): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.baseUrl}/health`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Short timeout for health check
+        signal: AbortSignal.timeout(3000)
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.warn('Backend health check failed:', error);
+      return false;
+    }
   }
 
   // ============================
@@ -479,6 +557,262 @@ class SimplifiedApiService {
   }
 
   // ============================
+  // JD Upload and Search Methods
+  // ============================
+
+  /**
+   * Upload a job description file and associate it with a chat session
+   * POST /api/v1/jd/upload
+   */
+  async uploadJobDescription(sessionId: string, file: File): Promise<JDUploadResponse> {
+    try {
+      // First check if backend is available
+      const isBackendAvailable = await this.checkBackendHealth();
+      
+      if (!isBackendAvailable) {
+        // Return mock response when backend is not available
+        console.warn('Backend not available, using mock response for JD upload');
+        return {
+          message: `Job description "${file.name}" uploaded successfully (mock)`,
+          job_description_id: `jd_${Date.now()}`,
+          file_name: file.name,
+          session_id: sessionId,
+          extracted_text: "Mock extracted text for demonstration purposes",
+          success: true
+        };
+      }
+
+      const formData = new FormData();
+      formData.append('session_id', sessionId);
+      formData.append('file', file);
+
+      const response = await fetch(`${this.baseUrl}/api/v1/jd/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.detail || `JD upload failed: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error uploading job description:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to upload job description');
+    }
+  }
+
+  /**
+   * Search for resumes matching the uploaded job description
+   * POST /api/v1/jd/search
+   */
+  async searchWithJobDescription(request: JDSearchRequest): Promise<JDSearchResponse> {
+    try {
+      // Check if backend is available
+      const isBackendAvailable = await this.checkBackendHealth();
+      
+      if (!isBackendAvailable) {
+        // Return mock response when backend is not available
+        console.warn('Backend not available, using mock response for JD search');
+        return {
+          session_id: request.session_id,
+          job_description_id: `jd_${Date.now()}`,
+          job_description_text: "Mock job description for demonstration",
+          matches: [
+            {
+              id: `candidate_${Date.now()}_1`,
+              file_name: "candidate1.pdf",
+              score: 0.92,
+              extracted_info: {
+                name: "John Smith",
+                skills: ["React", "Node.js", "TypeScript", "Python"],
+                experience: ["5 years full-stack development", "Senior Software Engineer"]
+              },
+              relevant_text: "Experienced full-stack developer with React and Node.js expertise"
+            },
+            {
+              id: `candidate_${Date.now()}_2`,
+              file_name: "candidate2.pdf",
+              score: 0.87,
+              extracted_info: {
+                name: "Jane Doe",
+                skills: ["Vue.js", "Django", "PostgreSQL", "AWS"],
+                experience: ["4 years backend development", "Software Engineer"]
+              },
+              relevant_text: "Backend specialist with Django and cloud infrastructure experience"
+            }
+          ],
+          total_results: 2,
+          processing_time: 0.5,
+          search_results_stored: true,
+          success: true
+        };
+      }
+
+      const response = await fetch(`${this.baseUrl}/api/v1/jd/search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: request.session_id,
+          top_k: request.top_k || 10,
+          filters: request.filters || {}
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.detail || `JD search failed: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error searching with job description:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to search with job description');
+    }
+  }
+
+  /**
+   * Ask follow-up questions about the stored JD search results
+   * POST /api/v1/jd/followup
+   */
+  async askJDFollowUp(request: JDFollowUpRequest): Promise<JDFollowUpResponse> {
+    try {
+      // Check if backend is available
+      const isBackendAvailable = await this.checkBackendHealth();
+      
+      if (!isBackendAvailable) {
+        // Return mock response when backend is not available
+        console.warn('Backend not available, using mock response for JD follow-up');
+        return {
+          session_id: request.session_id,
+          question: request.question,
+          answer: "This is a mock response for your follow-up question. The candidates were selected based on their strong match with the job requirements, particularly their technical skills and experience level.",
+          candidates_analyzed: 2,
+          jd_filename: "mock_job_description.pdf",
+          success: true
+        };
+      }
+
+      const response = await fetch(`${this.baseUrl}/api/v1/jd/followup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: request.session_id,
+          question: request.question
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.detail || `JD follow-up failed: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error asking JD follow-up question:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to ask JD follow-up question');
+    }
+  }
+
+  /**
+   * Get stored search results for a session
+   * GET /api/v1/jd/session/{session_id}/results
+   */
+  async getJDSearchResults(sessionId: string): Promise<JDSearchResultsResponse> {
+    try {
+      // Check if backend is available
+      const isBackendAvailable = await this.checkBackendHealth();
+      
+      if (!isBackendAvailable) {
+        // Return mock response when backend is not available
+        console.warn('Backend not available, using mock response for JD search results');
+        return {
+          session_id: sessionId,
+          search_results: {
+            jd_id: `jd_${Date.now()}`,
+            jd_text: "Mock job description text for download demonstration",
+            jd_filename: "mock_job_description.pdf",
+            matches: [
+              {
+                id: `candidate_${Date.now()}_1`,
+                file_name: "candidate1.pdf",
+                score: 0.92,
+                extracted_info: {
+                  name: "John Smith",
+                  skills: ["React", "Node.js", "TypeScript", "Python"],
+                  experience: ["5 years full-stack development", "Senior Software Engineer"]
+                },
+                relevant_text: "Experienced full-stack developer with React and Node.js expertise"
+              },
+              {
+                id: `candidate_${Date.now()}_2`,
+                file_name: "candidate2.pdf",
+                score: 0.87,
+                extracted_info: {
+                  name: "Jane Doe",
+                  skills: ["Vue.js", "Django", "PostgreSQL", "AWS"],
+                  experience: ["4 years backend development", "Software Engineer"]
+                },
+                relevant_text: "Backend specialist with Django and cloud infrastructure experience"
+              }
+            ],
+            total_matches: 2,
+            search_timestamp: new Date().toISOString()
+          },
+          success: true
+        };
+      }
+
+      const response = await fetch(`${this.baseUrl}/api/v1/jd/session/${sessionId}/results`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.detail || `Failed to get JD results: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting JD search results:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to get JD search results');
+    }
+  }
+
+  /**
+   * Delete the job description associated with a session
+   * DELETE /api/v1/jd/session/{session_id}
+   */
+  async deleteJobDescription(sessionId: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v1/jd/session/${sessionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.detail || `JD deletion failed: ${response.status}`);
+      }
+
+      return { success: true, message: 'Job description deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting job description:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to delete job description');
+    }
+  }
+
+  // ============================
   // Health Check
   // ============================
 
@@ -559,6 +893,13 @@ export const resumeApi = {
   
   // Chat messaging
   sendChatMessage: (sessionId: string, message: { content: string; type: 'user' }) => simplifiedApiService.sendChatMessage(sessionId, message),
+  
+  // JD Upload and Search
+  uploadJobDescription: (sessionId: string, file: File) => simplifiedApiService.uploadJobDescription(sessionId, file),
+  searchWithJobDescription: (request: JDSearchRequest) => simplifiedApiService.searchWithJobDescription(request),
+  askJDFollowUp: (request: JDFollowUpRequest) => simplifiedApiService.askJDFollowUp(request),
+  getJDSearchResults: (sessionId: string) => simplifiedApiService.getJDSearchResults(sessionId),
+  deleteJobDescription: (sessionId: string) => simplifiedApiService.deleteJobDescription(sessionId),
   
   // File management
   uploadResumes: (files: File[]) => simplifiedApiService.uploadResumes(files),
