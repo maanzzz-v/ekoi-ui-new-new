@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import type { Agent } from "@/lib/types"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface ConfigureAgentPageProps {
   agent: Agent | null
@@ -40,7 +41,7 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
     { id: "2", name: "Parameter", value: "15 LPA", weight: 20, description: "Maximum CTC for the role" },
     { id: "3", name: "Parameter", value: "Bangalore - On site only", weight: 30, description: "Job Location" },
     { id: "4", name: "Parameter", value: "AI in Biomedical", weight: 20, description: "Projects done by Applicant" },
-    {
+    /*{
       id: "5",
       name: "Parameter",
       value: "AI Engineer",
@@ -67,7 +68,7 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
       value: "AI Engineer",
       weight: 0,
       description: "Position the applicant has worked in",
-    },
+    },*/
   ])
   const [newParameterName, setNewParameterName] = useState("")
 
@@ -177,6 +178,18 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
                 </div>
               </div>
               <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6">Choose the model</Button>
+              <Select value={selectedModel} onValueChange={setSelectedModel}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select Model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {modelOptions.map((model) => (
+                    <SelectItem key={model} value={model}>
+                      {model}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -219,12 +232,12 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
                 </CardContent>
               </Card>
 
-              <Input
+              {/*<Input
                 value={parameter.value}
                 onChange={(e) => updateParameterValue(parameter.id, e.target.value)}
                 placeholder="Parameter value"
                 className="bg-white border border-gray-300"
-              />
+              />*/}
 
               <div className="flex items-center gap-2">
                 <Button

@@ -76,42 +76,28 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
   const [parameters, setParameters] = useState<Parameter[]>([
     {
       id: "1",
-      name: "Parameter",
-      value: "AI Engineer",
+      name: "Experience",
       weight: 30,
-      description: "Position the applicant has worked in",
-    },
-    { id: "2", name: "Parameter", value: "15 LPA", weight: 20, description: "Maximum CTC for the role" },
-    { id: "3", name: "Parameter", value: "Bangalore - On site only", weight: 30, description: "Job Location" },
-    { id: "4", name: "Parameter", value: "AI in Biomedical", weight: 20, description: "Projects done by Applicant" },
-    {
-      id: "5",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 0,
-      description: "Position the applicant has worked in",
+      description: "Years of relevant experience in the field"
     },
     {
-      id: "6",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 0,
-      description: "Position the applicant has worked in",
+      id: "2",
+      name: "Technical Skills",
+      weight: 25,
+      description: "Required technical skills match"
     },
     {
-      id: "7",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 0,
-      description: "Position the applicant has worked in",
+      id: "3",
+      name: "Location",
+      weight: 20,
+      description: "Candidate location preference"
     },
     {
-      id: "8",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 0,
-      description: "Position the applicant has worked in",
-    },
+      id: "4",
+      name: "Education",
+      weight: 25,
+      description: "Educational qualifications match"
+    }
   ])
 
   // Output state
@@ -202,17 +188,81 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
 
   const getParameterColor = (index: number) => {
     const colors = [
-      "bg-blue-100 border-blue-200",
-      "bg-orange-100 border-orange-200",
-      "bg-purple-100 border-purple-200",
-      "bg-green-100 border-green-200",
-      "bg-cyan-100 border-cyan-200",
-      "bg-yellow-100 border-yellow-200",
-      "bg-blue-100 border-blue-200",
-      "bg-gray-100 border-gray-200",
+      "border-blue-200 bg-blue-50/50",
+      "border-emerald-200 bg-emerald-50/50",
+      "border-purple-200 bg-purple-50/50",
+      "border-amber-200 bg-amber-50/50"
     ]
     return colors[index % colors.length]
   }
+
+  const renderParameterCards = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {parameters.map((parameter, index) => (
+        <div key={parameter.id} className="relative group">
+          <Card className={`
+            h-[220px] 
+            transition-all 
+            duration-300 
+            hover:shadow-lg 
+            border-2
+            ${getParameterColor(index)}
+            hover:scale-105
+          `}>
+            <CardContent className="p-6 h-full flex flex-col justify-between">
+              <div>
+                <h4 className="text-xl font-semibold text-gray-800 mb-2">
+                  {parameter.name}
+                </h4>
+                
+                {/* Description input */}
+                <Textarea
+                  placeholder="Parameter description"
+                  value={parameter.description}
+                  onChange={(e) => updateParameterDescription(parameter.id, e.target.value)}
+                  className="text-sm text-gray-600 resize-none mt-4"
+                  rows={2}
+                />
+
+                {/* Circular Progress Indicator */}
+                <div className="absolute top-6 right-6 w-12 h-12 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white">
+                  <span className="text-sm font-bold text-gray-800">
+                    {parameter.weight}%
+                  </span>
+                </div>
+              </div>
+
+              {/* Weight Adjustment Controls */}
+              <div className="flex items-center gap-3 mt-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 rounded-full bg-white/80 hover:bg-white"
+                  onClick={() => updateParameterWeight(parameter.id, Math.max(0, parameter.weight - 5))}
+                >
+                  -
+                </Button>
+                <div className="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-orange-500 transition-all duration-300"
+                    style={{ width: `${parameter.weight}%` }}
+                  />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 rounded-full bg-white/80 hover:bg-white"
+                  onClick={() => updateParameterWeight(parameter.id, Math.min(100, parameter.weight + 5))}
+                >
+                  +
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ))}
+    </div>
+  )
 
   const renderNotificationDialog = () => {
     const notificationType = notificationTypes.find((nt) => nt.id === selectedNotificationType)
@@ -375,7 +425,7 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
           {activeTab === "parameter" && (
             <div>
               {/* Parameters Section */}
-              <div className="flex items-center justify-between mb-4">
+              {/*<div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-semibold text-gray-900">Parameter</h3>
                   <span className="bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
@@ -388,60 +438,21 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
                 >
                   + Add Parameter
                 </Button>
-              </div>
+              </div>*/}
 
               {/* Parameters Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                {parameters.map((parameter, index) => (
-                  <div key={parameter.id} className="space-y-3">
-                    <Card className={`${getParameterColor(index)} border-2`}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">{index + 1}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeParameter(parameter.id)}
-                            className="h-6 w-6 p-0 hover:bg-red-100"
-                          >
-                            ×
-                          </Button>
-                        </div>
-                        <h4 className="font-semibold text-lg mb-2">{parameter.name}</h4>
-                        <p className="text-sm text-gray-600">{parameter.description}</p>
-                      </CardContent>
-                    </Card>
-
-                    <Input
-                      value={parameter.value}
-                      onChange={(e) => updateParameterValue(parameter.id, e.target.value)}
-                      placeholder="Parameter value"
-                      className="bg-white border border-gray-300"
-                    />
-
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 border border-gray-300 rounded-full"
-                        onClick={() => updateParameterWeight(parameter.id, Math.max(0, parameter.weight - 5))}
-                      >
-                        -
-                      </Button>
-                      <div className="flex-1 text-center">
-                        <span className="font-medium">{parameter.weight}%</span>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 border border-gray-300 rounded-full"
-                        onClick={() => updateParameterWeight(parameter.id, Math.min(100, parameter.weight + 5))}
-                      >
-                        +
-                      </Button>
-                    </div>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {/*<h3 className="text-xl font-semibold text-gray-900">Resume Shortlisting Parameters</h3>
+                    {!isValidWeight && (
+                      <span className="text-sm text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">
+                        Total: {totalWeight}%
+                      </span>
+                    )}*/}
                   </div>
-                ))}
+                </div>
+                {renderParameterCards()}
               </div>
 
               {!isValidWeight && (
