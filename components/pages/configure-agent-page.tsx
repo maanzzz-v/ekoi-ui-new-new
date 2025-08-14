@@ -22,7 +22,6 @@ interface ConfigureAgentPageProps {
 interface Parameter {
   id: string
   name: string
-  value: string
   weight: number
   description: string
 }
@@ -70,35 +69,40 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
   const [agentName, setAgentName] = useState(agent?.name || "")
   const [agentRole, setAgentRole] = useState(agent?.role || "")
   const [description, setDescription] = useState(agent?.description || "")
-  const [selectedModel, setSelectedModel] = useState("GPT-4 Turbo")
+  const defaultModel = "GPT-4 Turbo"
+  const [selectedModel, setSelectedModel] = useState(agent?.model || "GPT-4 Turbo")
+  const [tempModel, setTempModel] = useState(selectedModel)
+
 
   // Parameter state
-  const [parameters, setParameters] = useState<Parameter[]>([
-    {
-      id: "1",
-      name: "Experience",
-      weight: 30,
-      description: "Years of relevant experience in the field"
-    },
-    {
-      id: "2",
-      name: "Technical Skills",
-      weight: 25,
-      description: "Required technical skills match"
-    },
-    {
-      id: "3",
-      name: "Location",
-      weight: 20,
-      description: "Candidate location preference"
-    },
-    {
-      id: "4",
-      name: "Education",
-      weight: 25,
-      description: "Educational qualifications match"
-    }
-  ])
+  const [parameters, setParameters] = useState<Parameter[]>(
+    [
+      {
+        id: "1",
+        name: "Experience",
+        weight: 30,
+        description: "Years of relevant experience in the field"
+      },
+      {
+        id: "2",
+        name: "Technical Skills",
+        weight: 25,
+        description: "Required technical skills match"
+      },
+      {
+        id: "3",
+        name: "Location",
+        weight: 20,
+        description: "Candidate location preference"
+      },
+      {
+        id: "4",
+        name: "Education",
+        weight: 25,
+        description: "Educational qualifications match"
+      }
+    ]
+  )
 
   // Output state
   const [outputConfig, setOutputConfig] = useState<OutputConfig>({
@@ -111,6 +115,7 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
   const [showNotificationDialog, setShowNotificationDialog] = useState(false)
   const [selectedNotificationType, setSelectedNotificationType] = useState<string>("")
   const [notificationSettings, setNotificationSettings] = useState<any>({})
+  const [showModelDialog, setShowModelDialog] = useState(false)
 
   useEffect(() => {
     if (agent) {
@@ -141,7 +146,6 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
     const newParam: Parameter = {
       id: Date.now().toString(),
       name: "Parameter",
-      value: "",
       weight: 0,
       description: "New parameter description",
     }
@@ -181,6 +185,7 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
         name: agentName,
         role: agentRole,
         description: description,
+        model: selectedModel,
       }
       onSave(updatedAgent)
     }
@@ -415,7 +420,22 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
                   </p>
                 </div>
               </div>
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6">Choose the model</Button>
+              <div className="flex flex-col items-end">
+                <span className="text-sm text-gray-500 mb-1">
+                  {selectedModel === defaultModel && !agent?.model
+                    ? `Default: ${defaultModel}`
+                    : `Selected: ${selectedModel}`}
+                </span>
+                <Button 
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6"
+                  onClick={() => {
+                    setTempModel(selectedModel) // Reset temp to current model
+                    setShowModelDialog(true)
+                  }}
+                >
+                  Choose the model
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -578,6 +598,45 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
       </div>
 
       {renderNotificationDialog()}
+      <Dialog open={showModelDialog} onOpenChange={setShowModelDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Select AI Model</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Select
+              onValueChange={(value) => setTempModel(value)}
+              defaultValue={tempModel}
+            >
+              <SelectTrigger className="h-12 text-lg border-2 border-orange-200">
+                <SelectValue placeholder="Select model" />
+              </SelectTrigger>
+              <SelectContent>
+                {modelOptions.map((model) => (
+                  <SelectItem key={model} value={model}>
+                    {model}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowModelDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600"
+              onClick={() => {
+                setSelectedModel(tempModel)
+                setShowModelDialog(false)
+                }
+              }
+            >
+              Save Model
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

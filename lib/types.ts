@@ -15,6 +15,7 @@ export interface Agent {
   description: string
   avatar: string
   status: "active" | "inactive"
+  model: string
 }
 
 export interface Project {
