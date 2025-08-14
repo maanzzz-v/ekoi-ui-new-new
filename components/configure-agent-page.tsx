@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import type { Agent } from "@/lib/types"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import axios from "axios"
 
 interface ConfigureAgentPageProps {
   agent: Agent | null
@@ -30,46 +31,48 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
   const [agentRole, setAgentRole] = useState(agent?.role || "")
   const [description, setDescription] = useState(agent?.description || "")
   const [selectedModel, setSelectedModel] = useState("GPT-4 Turbo")
-  const [parameters, setParameters] = useState<Parameter[]>([
-    {
-      id: "1",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 30,
-      description: "Position the applicant has worked in",
-    },
-    { id: "2", name: "Parameter", value: "15 LPA", weight: 20, description: "Maximum CTC for the role" },
-    { id: "3", name: "Parameter", value: "Bangalore - On site only", weight: 30, description: "Job Location" },
-    { id: "4", name: "Parameter", value: "AI in Biomedical", weight: 20, description: "Projects done by Applicant" },
-    /*{
-      id: "5",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 0,
-      description: "Position the applicant has worked in",
-    },
-    {
-      id: "6",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 0,
-      description: "Position the applicant has worked in",
-    },
-    {
-      id: "7",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 0,
-      description: "Position the applicant has worked in",
-    },
-    {
-      id: "8",
-      name: "Parameter",
-      value: "AI Engineer",
-      weight: 0,
-      description: "Position the applicant has worked in",
-    },*/
-  ])
+  const [parameters, setParameters] = useState<Parameter[]>(
+    [
+      {
+        id: "1",
+        name: "Parameter",
+        value: "AI Engineer",
+        weight: 30,
+        description: "Position the applicant has worked in",
+      },
+      { id: "2", name: "Parameter", value: "15 LPA", weight: 20, description: "Maximum CTC for the role" },
+      { id: "3", name: "Parameter", value: "Bangalore - On site only", weight: 30, description: "Job Location" },
+      { id: "4", name: "Parameter", value: "AI in Biomedical", weight: 20, description: "Projects done by Applicant" },
+      /*{
+        id: "5",
+        name: "Parameter",
+        value: "AI Engineer",
+        weight: 0,
+        description: "Position the applicant has worked in",
+      },
+      {
+        id: "6",
+        name: "Parameter",
+        value: "AI Engineer",
+        weight: 0,
+        description: "Position the applicant has worked in",
+      },
+      {
+        id: "7",
+        name: "Parameter",
+        value: "AI Engineer",
+        weight: 0,
+        description: "Position the applicant has worked in",
+      },
+      {
+        id: "8",
+        name: "Parameter",
+        value: "AI Engineer",
+        weight: 0,
+        description: "Position the applicant has worked in",
+      },*/
+    ]
+  )
   const [newParameterName, setNewParameterName] = useState("")
 
   useEffect(() => {
@@ -113,7 +116,49 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
     setParameters((prev) => prev.filter((param) => param.id !== id))
   }
 
-  const handleSave = () => {
+  const saveAgentParameters = async (agentName: string, parameters: Parameter[]) => {
+    try {
+      const response = await axios.post("/api/v1/agent-parameters/save", {
+        agent_name: agentName,
+        parameter1: parameters[0]?.value || "",
+        parameter2: parameters[1]?.value || "",
+        parameter3: parameters[2]?.value || "",
+        parameter4: parameters[3]?.value || "",
+      })
+      console.log("Saved successfully:", response.data)
+    } catch (error) {
+      console.error("Error saving agent parameters:", error)
+    }
+  }
+
+  const fetchAgentParameters = async (agentName: string) => {
+    try {
+      const response = await axios.get(`/api/v1/agent-parameters/fetch`)
+      const agentData = response.data.find((item: any) => item.agent_name === agentName)
+      if (agentData) {
+        return [
+          { id: "1", name: "Parameter", value: agentData.parameter1, weight: 25, description: "" },
+          { id: "2", name: "Parameter", value: agentData.parameter2, weight: 25, description: "" },
+          { id: "3", name: "Parameter", value: agentData.parameter3, weight: 25, description: "" },
+          { id: "4", name: "Parameter", value: agentData.parameter4, weight: 25, description: "" },
+        ]
+      }
+      return []
+    } catch (error) {
+      console.error("Error fetching agent parameters:", error)
+      return []
+    }
+  }
+
+  useEffect(() => {
+    if (agent) {
+      fetchAgentParameters(agent.name).then((fetchedParameters) => {
+        setParameters(fetchedParameters)
+      })
+    }
+  }, [agent])
+
+  const handleSave = async () => {
     if (isFormValid && agent) {
       const updatedAgent: Agent = {
         ...agent,
@@ -121,6 +166,7 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
         role: agentRole,
         description: description,
       }
+      await saveAgentParameters(agentName, parameters)
       onSave(updatedAgent)
     }
   }
