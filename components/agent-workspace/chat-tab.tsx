@@ -151,10 +151,24 @@ export function ChatTab({ agent }: ChatTabProps) {
   }
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedChat || isSending) return
+    if (!newMessage.trim() || isSending) return
 
     setIsSending(true)
     const messageContent = newMessage.trim()
+
+    // If no chat is selected, create a new one first
+    if (!selectedChat) {
+      try {
+        await createNewSession()
+        // Keep the message for when the session is created
+        return
+      } catch (error) {
+        console.error('Failed to create session:', error)
+        setIsSending(false)
+        return
+      }
+    }
+
     setNewMessage("")
 
     // Add user message immediately
@@ -260,8 +274,8 @@ export function ChatTab({ agent }: ChatTabProps) {
             messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
           } : null)
         } else {
-          // Use regular search endpoint
-          const searchResponse = await resumeApi.chatSearch({
+          // Use regular search endpoint with session
+          const searchResponse = await resumeApi.searchInSession(selectedChat.id, {
             message: messageContent
           })
           
@@ -383,18 +397,21 @@ export function ChatTab({ agent }: ChatTabProps) {
   }
 
   const handleDownloadResults = async () => {
-    if (!selectedChat || !selectedChat.hasUploadedFile) {
-      alert('No job description uploaded to download results for')
+    if (!selectedChat) {
+      alert('No active chat session to download results for')
       return
     }
 
     try {
-      // Get search results from the backend
-      const results = await resumeApi.getJDSearchResults(selectedChat.id)
+      let downloadContent = '';
       
-      // Create downloadable content
-      const downloadContent = `Job Description Search Results
-      
+      if (selectedChat.hasUploadedFile) {
+        // Get JD search results from the backend
+        const results = await resumeApi.getJDSearchResults(selectedChat.id)
+        
+        // Create downloadable content for JD results
+        downloadContent = `Job Description Search Results
+        
 Session ID: ${results.session_id}
 Job Description ID: ${results.search_results.jd_id}
 Job Description File: ${results.search_results.jd_filename}
@@ -414,7 +431,27 @@ ${index + 1}. ${match.extracted_info.name || 'Candidate'}
    Education: ${match.extracted_info.education || 'Not specified'}
    
 `).join('')}
-`
+`;
+      } else {
+        // Create download content from chat messages for regular sessions
+        const searchMessages = selectedChat.messages.filter(msg => 
+          msg.type === 'assistant' && msg.content.includes('candidates')
+        );
+        
+        downloadContent = `Chat Session Search Results
+        
+Session ID: ${selectedChat.id}
+Session Title: ${selectedChat.title}
+Generated: ${new Date().toLocaleString()}
+
+Chat History and Search Results:
+${selectedChat.messages.map((msg, index) => `
+${index + 1}. [${msg.type.toUpperCase()}] ${new Date(msg.timestamp).toLocaleString()}
+${msg.content}
+
+`).join('')}
+`;
+      }
       
       // Create and download the file
       const blob = new Blob([downloadContent], { type: 'text/plain' })
@@ -555,7 +592,7 @@ ${index + 1}. ${match.extracted_info.name || 'Candidate'}
                       <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".pdf"
+                        accept=".pdf,.txt"
                         onChange={handleFileUpload}
                         className="hidden"
                       />

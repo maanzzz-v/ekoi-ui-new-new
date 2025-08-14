@@ -15,7 +15,7 @@ interface AgentWorkspaceProps {
 }
 
 export function AgentWorkspace({ agent, onBack }: AgentWorkspaceProps) {
-  const [activeTab, setActiveTab] = useState("tasks")
+  const [activeTab, setActiveTab] = useState("chat")
 
   if (!agent) {
     return (
