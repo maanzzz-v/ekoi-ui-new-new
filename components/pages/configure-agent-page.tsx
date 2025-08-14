@@ -178,16 +178,34 @@ export function ConfigureAgentPage({ agent, onBack, onSave }: ConfigureAgentPage
     setNotificationConfig((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleSave = () => {
-    if (isFormValid && agent) {
-      const updatedAgent: Agent = {
-        ...agent,
-        name: agentName,
-        role: agentRole,
-        description: description,
-        model: selectedModel,
+  const handleSave = async () => {
+    if (isFormValid) {
+      const payload = {
+        agent_name: agentName,
+        parameter1: parameters[0]?.weight || 0,
+        parameter2: parameters[1]?.weight || 0,
+        parameter3: parameters[2]?.weight || 0,
+        parameter4: parameters[3]?.weight || 0,
+      };
+
+      try {
+        const response = await fetch('/api/v1/agent-parameters/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save agent parameters');
+        }
+
+        const data = await response.json();
+        console.log('Saved successfully:', data);
+      } catch (error) {
+        console.error('Error saving agent parameters:', error);
       }
-      onSave(updatedAgent)
     }
   }
 
