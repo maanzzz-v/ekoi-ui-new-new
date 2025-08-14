@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { Bot, FolderOpen, Database, HelpCircle, User, Home, X, Zap } from "lucide-react"
+import { Bot, FolderOpen, Database, HelpCircle, User, Home, X, Zap, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/lib/auth/auth-context"
 
 interface SidebarProps {
   isMobileOpen?: boolean
@@ -23,12 +24,18 @@ export function Sidebar({ isMobileOpen = false, onMobileToggle }: SidebarProps) 
   const [isExpanded, setIsExpanded] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+  const { logout } = useAuth()
 
   const handleNavigate = (path: string) => {
     router.push(path)
     if (onMobileToggle) {
       onMobileToggle()
     }
+  }
+
+  const handleLogout = () => {
+    logout()
+    router.push('/login')
   }
 
   const isActive = (path: string) => {
@@ -153,6 +160,28 @@ export function Sidebar({ isMobileOpen = false, onMobileToggle }: SidebarProps) 
               )}
             />
             {(isExpanded || isMobileOpen) && <span className="text-lg animate-slide-in">Profile</span>}
+          </Button>
+
+          <Button
+            variant="ghost"
+            className={cn(
+              "w-full justify-start transition-all duration-200 group",
+              "px-4 py-4 h-auto text-lg font-medium rounded-xl",
+              "hover:bg-red-500/20 hover:text-red-400 hover:shadow-lg hover:scale-105",
+              !isExpanded && "lg:px-4 lg:justify-center",
+              "sm:justify-start sm:px-5",
+            )}
+            style={{ color: "#ffffff" }}
+            onClick={handleLogout}
+          >
+            <LogOut
+              className={cn(
+                "h-6 w-6 flex-shrink-0 transition-transform duration-200",
+                (isExpanded || isMobileOpen) && "mr-4",
+                "group-hover:scale-110",
+              )}
+            />
+            {(isExpanded || isMobileOpen) && <span className="text-lg animate-slide-in">Logout</span>}
           </Button>
         </div>
       </div>
