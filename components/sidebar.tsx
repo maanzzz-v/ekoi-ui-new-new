@@ -17,7 +17,7 @@ const navigationItems = [
   { id: "/agents", icon: Bot, label: "Agents" },
   { id: "/projects", icon: FolderOpen, label: "Projects" },
   { id: "/data-sourcing", icon: Database, label: "Data Source" },
-  { id: "/demo", icon: Zap, label: "Backend Demo" },
+  /*{ id: "/demo", icon: Zap, label: "Backend Demo" },*/
 ]
 
 export function Sidebar({ isMobileOpen = false, onMobileToggle }: SidebarProps) {

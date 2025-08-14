@@ -28,16 +28,21 @@ interface ChatTabProps {
   agent?: Agent
 }
 
+// Add new interface for session with file state
+interface ExtendedChatSession extends ChatSession {
+  hasUploadedFile?: boolean;
+  fileName?: string;
+}
+
 export function ChatTab({ agent }: ChatTabProps) {
-  const [sessions, setSessions] = useState<ChatSession[]>([])
-  const [selectedChat, setSelectedChat] = useState<ChatSession | null>(null)
+  const [sessions, setSessions] = useState<ExtendedChatSession[]>([])
+  const [selectedChat, setSelectedChat] = useState<ExtendedChatSession | null>(null)
   const [newMessage, setNewMessage] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [isProcessingFile, setIsProcessingFile] = useState(false)
-  const [fileProcessed, setFileProcessed] = useState(false)
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null) 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Sample starter queries
@@ -48,17 +53,50 @@ export function ChatTab({ agent }: ChatTabProps) {
     "Compare the top 3 candidates"
   ]
 
+  // Add scroll to bottom effect
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [selectedChat?.messages])
+
   useEffect(() => {
     loadChatSessions()
   }, [])
 
+  // Add effect to load file states from localStorage
+  useEffect(() => {
+    const loadFileStates = () => {
+      const fileStates = localStorage.getItem('chatFileStates')
+      if (fileStates) {
+        const parsedStates = JSON.parse(fileStates)
+        setSessions(prevSessions => 
+          prevSessions.map(session => ({
+            ...session,
+            hasUploadedFile: parsedStates[session.id]?.hasUploadedFile || false,
+            fileName: parsedStates[session.id]?.fileName || null
+          }))
+        )
+      }
+    }
+    loadFileStates()
+  }, [])
+
+  // Update loadChatSessions to preserve file states
   const loadChatSessions = async () => {
     try {
       const response = await resumeApi.getChatSessions()
       if (response.success && Array.isArray(response.data)) {
-        setSessions(response.data)
-        if (response.data.length > 0 && !selectedChat) {
-          setSelectedChat(response.data[0])
+        // Load saved file states
+        const fileStates = JSON.parse(localStorage.getItem('chatFileStates') || '{}')
+        
+        const sessionsWithFileStates = response.data.map(session => ({
+          ...session,
+          hasUploadedFile: fileStates[session.id]?.hasUploadedFile || false,
+          fileName: fileStates[session.id]?.fileName || null
+        }))
+        
+        setSessions(sessionsWithFileStates)
+        if (sessionsWithFileStates.length > 0 && !selectedChat) {
+          setSelectedChat(sessionsWithFileStates[0])
         }
       }
     } catch (error) {
@@ -226,42 +264,50 @@ export function ChatTab({ agent }: ChatTabProps) {
     inputRef.current?.focus()
   }
 
+  // Update handleFileUpload to persist file state
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (!file) return
+    if (!file || !selectedChat) return
 
-    // Validate file type
     if (file.type !== 'application/pdf') {
       alert('Please select a PDF file')
       return
     }
 
     setIsProcessingFile(true)
-    setUploadedFileName(file.name)
 
     try {
-      // TODO: Replace with actual API call when backend is ready
-      // const formData = new FormData()
-      // formData.append('file', file)
-      // const response = await fetch('/api/process-job-description', {
-      //   method: 'POST',
-      //   body: formData
-      // })
-      // const result = await response.json()
-
       // Simulate API processing delay
       await new Promise(resolve => setTimeout(resolve, 2000))
       
-      setFileProcessed(true)
+      // Save file state to localStorage
+      const fileStates = JSON.parse(localStorage.getItem('chatFileStates') || '{}')
+      fileStates[selectedChat.id] = {
+        hasUploadedFile: true,
+        fileName: file.name
+      }
+      localStorage.setItem('chatFileStates', JSON.stringify(fileStates))
+      
+      // Update the session with file information
+      setSessions(prev => prev.map(session => 
+        session.id === selectedChat.id 
+          ? { ...session, hasUploadedFile: true, fileName: file.name }
+          : session
+      ))
+
+      setSelectedChat(prev => prev ? {
+        ...prev,
+        hasUploadedFile: true,
+        fileName: file.name
+      } : null)
+      
     } catch (error) {
       console.error('Error processing file:', error)
       alert('Error processing file. Please try again.')
-      setUploadedFileName(null)
     } finally {
       setIsProcessingFile(false)
     }
 
-    // Clear the input so same file can be uploaded again
     event.target.value = ''
   }
 
@@ -270,7 +316,7 @@ export function ChatTab({ agent }: ChatTabProps) {
     // For now, create a dummy download
     const dummyData = `Job Description Analysis Results
     
-File: ${uploadedFileName}
+File: ${selectedChat?.fileName}
 Processed: ${new Date().toLocaleString()}
 
 Key Requirements Extracted:
@@ -290,7 +336,7 @@ This is a placeholder result. Actual analysis will be provided by the backend AP
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `job_analysis_${uploadedFileName?.replace('.pdf', '')}_results.txt`
+    a.download = `job_analysis_${selectedChat?.fileName?.replace('.pdf', '')}_results.txt`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -321,29 +367,40 @@ This is a placeholder result. Actual analysis will be provided by the backend AP
           />
         </div>
 
-        {/* Chat Sessions List */}
-        <ScrollArea className="flex-1">
+        {/* Chat Sessions List - Update to force scrollbar */}
+        <ScrollArea className="flex-1 h-0">
           <div className="p-2 space-y-2">
             {filteredSessions.map((session, index) => (
               <Card
                 key={session?.id || `session-${index}`}
                 className={`cursor-pointer transition-colors hover:bg-gray-50 ${
                   selectedChat?.id === session?.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''
-                }`}
+                } max-w-[80%]`}
                 onClick={() => setSelectedChat(session)}
               >
                 <CardContent className="p-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between space-x-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm text-gray-900 truncate">
-                        {session?.title || 'Untitled Chat'}
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {session?.messages?.length || 0} messages
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {new Date(session.updated_at).toLocaleDateString()}
-                      </p>
+                      <div className="flex items-center space-x-2">
+                        <MessageSquare className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <h3 className="font-medium text-sm text-gray-900 truncate">
+                          {session?.title || 'Untitled Chat'}
+                        </h3>
+                      </div>
+                      <div className="mt-1 flex items-center space-x-2 text-xs text-gray-500">
+                        <span>{session?.messages?.length || 0} messages</span>
+                        <span>•</span>
+                        <span>{new Date(session.updated_at).toLocaleDateString()}</span>
+                        <span>•</span>
+                      </div>
+                      <div className="mt-1 flex items-center space-x-2 text-xs text-gray-500">
+                        {session.hasUploadedFile && (
+                          <>
+                            <FileText className="h-3 w-3" />
+                            <span className="truncate">{session.fileName}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -386,9 +443,9 @@ This is a placeholder result. Actual analysis will be provided by the backend AP
                   </p>
                 </div>
                 
-                {/* Upload Job Description Button */}
+                {/* Updated Upload/Download Button */}
                 <div className="flex items-center gap-3">
-                  {fileProcessed ? (
+                  {selectedChat.hasUploadedFile ? (
                     <Button
                       onClick={handleDownloadResults}
                       className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 h-10"
@@ -426,19 +483,19 @@ This is a placeholder result. Actual analysis will be provided by the backend AP
               </div>
               
               {/* File Status Indicator */}
-              {uploadedFileName && (
+              {selectedChat.fileName && (
                 <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border">
                   <FileText className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm text-gray-700">{uploadedFileName}</span>
-                  {fileProcessed && (
+                  <span className="text-sm text-gray-700">{selectedChat.fileName}</span>
+                  {selectedChat.hasUploadedFile && (
                     <CheckCircle className="h-4 w-4 text-green-600 ml-auto" />
                   )}
                 </div>
               )}
             </div>
 
-            {/* Messages Area */}
-            <ScrollArea className="flex-1 p-4">
+            {/* Messages Area - Update ScrollArea to force scrollbar */}
+            <ScrollArea className="flex-1 h-0 p-4">
               <div className="space-y-4">
                 {selectedChat.messages.length === 0 ? (
                   <div className="text-center py-8">
@@ -492,11 +549,12 @@ This is a placeholder result. Actual analysis will be provided by the backend AP
                     </div>
                   ))
                 )}
+                <div ref={messagesEndRef} /> {/* Add scroll anchor */}
               </div>
             </ScrollArea>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">
+            <div className="p-4 border-t border-gray-200 bg-white">
               <div className="flex gap-2">
                 <div className="flex-1">
                   <Textarea
