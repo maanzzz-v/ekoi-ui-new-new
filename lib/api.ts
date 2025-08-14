@@ -65,7 +65,8 @@ export interface CreateSessionRequest {
 
 export interface CreateSessionResponse {
   success: boolean;
-  data: ChatSession;
+  session: ChatSession;
+  message?: string;
 }
 
 export interface SessionsListResponse {
@@ -194,7 +195,11 @@ class SimplifiedApiService {
       }
 
       const data = await response.json();
-      return { success: true, data };
+      return { 
+        success: true, 
+        session: data.session,
+        message: data.message 
+      };
     } catch (error) {
       console.error('Error creating chat session:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to create chat session');

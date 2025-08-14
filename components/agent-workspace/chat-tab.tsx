@@ -9,7 +9,11 @@ import {
   Loader2, 
   Trash2, 
   Bot,
-  User
+  User,
+  Upload,
+  FileText,
+  Download,
+  CheckCircle
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,7 +34,11 @@ export function ChatTab({ agent }: ChatTabProps) {
   const [newMessage, setNewMessage] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [isProcessingFile, setIsProcessingFile] = useState(false)
+  const [fileProcessed, setFileProcessed] = useState(false)
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Sample starter queries
   const starterQueries = [
@@ -65,13 +73,30 @@ export function ChatTab({ agent }: ChatTabProps) {
         agent_id: agent?.id
       })
       
-      if (response.success && response.data) {
-        const newSession = response.data
+      if (response.success && response.session) {
+        // The API returns the session data under 'session' key, not 'data'
+        const newSession = {
+          ...response.session,
+          id: response.session.id || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          title: response.session.title || `Chat ${new Date().toLocaleString()}`,
+          messages: response.session.messages || []
+        }
         setSessions(prev => [newSession, ...prev])
         setSelectedChat(newSession)
       }
     } catch (error) {
       console.error('Failed to create new session:', error)
+      // Create a fallback session if API fails
+      const now = new Date().toISOString()
+      const fallbackSession = {
+        id: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        title: `Chat ${new Date().toLocaleString()}`,
+        messages: [],
+        created_at: now,
+        updated_at: now
+      }
+      setSessions(prev => [fallbackSession, ...prev])
+      setSelectedChat(fallbackSession)
     }
   }
 
@@ -201,8 +226,79 @@ export function ChatTab({ agent }: ChatTabProps) {
     inputRef.current?.focus()
   }
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      alert('Please select a PDF file')
+      return
+    }
+
+    setIsProcessingFile(true)
+    setUploadedFileName(file.name)
+
+    try {
+      // TODO: Replace with actual API call when backend is ready
+      // const formData = new FormData()
+      // formData.append('file', file)
+      // const response = await fetch('/api/process-job-description', {
+      //   method: 'POST',
+      //   body: formData
+      // })
+      // const result = await response.json()
+
+      // Simulate API processing delay
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      setFileProcessed(true)
+    } catch (error) {
+      console.error('Error processing file:', error)
+      alert('Error processing file. Please try again.')
+      setUploadedFileName(null)
+    } finally {
+      setIsProcessingFile(false)
+    }
+
+    // Clear the input so same file can be uploaded again
+    event.target.value = ''
+  }
+
+  const handleDownloadResults = () => {
+    // TODO: Implement actual download when backend is ready
+    // For now, create a dummy download
+    const dummyData = `Job Description Analysis Results
+    
+File: ${uploadedFileName}
+Processed: ${new Date().toLocaleString()}
+
+Key Requirements Extracted:
+- Technical Skills: React, Node.js, TypeScript
+- Experience Level: 3-5 years
+- Education: Bachelor's degree preferred
+- Soft Skills: Team collaboration, Communication
+
+Recommended Candidate Filters:
+- Skills match threshold: 80%
+- Experience range: 2-6 years
+- Location: Remote/Hybrid acceptable
+
+This is a placeholder result. Actual analysis will be provided by the backend API.`
+
+    const blob = new Blob([dummyData], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `job_analysis_${uploadedFileName?.replace('.pdf', '')}_results.txt`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   const filteredSessions = sessions.filter(session =>
-    session.title.toLowerCase().includes(searchTerm.toLowerCase())
+    (session?.title || 'Untitled Chat').toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -228,11 +324,11 @@ export function ChatTab({ agent }: ChatTabProps) {
         {/* Chat Sessions List */}
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-2">
-            {filteredSessions.map((session) => (
+            {filteredSessions.map((session, index) => (
               <Card
-                key={session.id}
+                key={session?.id || `session-${index}`}
                 className={`cursor-pointer transition-colors hover:bg-gray-50 ${
-                  selectedChat?.id === session.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                  selectedChat?.id === session?.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''
                 }`}
                 onClick={() => setSelectedChat(session)}
               >
@@ -240,10 +336,10 @@ export function ChatTab({ agent }: ChatTabProps) {
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-sm text-gray-900 truncate">
-                        {session.title}
+                        {session?.title || 'Untitled Chat'}
                       </h3>
                       <p className="text-xs text-gray-500 mt-1">
-                        {session.messages.length} messages
+                        {session?.messages?.length || 0} messages
                       </p>
                       <p className="text-xs text-gray-400">
                         {new Date(session.updated_at).toLocaleDateString()}
@@ -282,10 +378,63 @@ export function ChatTab({ agent }: ChatTabProps) {
           <>
             {/* Chat Header */}
             <div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
-              <h2 className="text-lg font-semibold text-gray-900">{selectedChat.title}</h2>
-              <p className="text-sm text-gray-500">
-                {selectedChat.messages.length} messages • AI Assistant
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">{selectedChat?.title || 'Untitled Chat'}</h2>
+                  <p className="text-sm text-gray-500">
+                    {selectedChat?.messages?.length || 0} messages • AI Assistant
+                  </p>
+                </div>
+                
+                {/* Upload Job Description Button */}
+                <div className="flex items-center gap-3">
+                  {fileProcessed ? (
+                    <Button
+                      onClick={handleDownloadResults}
+                      className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 h-10"
+                    >
+                      <Download className="h-4 w-4" />
+                      Download Results
+                    </Button>
+                  ) : isProcessingFile ? (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 border border-orange-200 rounded-lg h-10">
+                      <Loader2 className="h-4 w-4 animate-spin text-orange-600" />
+                      <div className="text-sm">
+                        <span className="font-medium text-orange-800">Processing...</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        onClick={() => fileInputRef.current?.click()}
+                        variant="outline"
+                        className="flex items-center gap-2 border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 transition-all duration-200 h-10"
+                      >
+                        <Upload className="h-4 w-4" />
+                        Upload Job Description
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              {/* File Status Indicator */}
+              {uploadedFileName && (
+                <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border">
+                  <FileText className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm text-gray-700">{uploadedFileName}</span>
+                  {fileProcessed && (
+                    <CheckCircle className="h-4 w-4 text-green-600 ml-auto" />
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Messages Area */}
