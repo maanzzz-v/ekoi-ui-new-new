@@ -344,13 +344,11 @@ export function ChatTab({ agent }: ChatTabProps) {
       alert('Please select a PDF or TXT file')
       return
     }
-
     setIsProcessingFile(true)
 
     try {
       // Upload to backend using the real API
       const response = await resumeApi.uploadJobDescription(selectedChat.id, file)
-      
       // Save file state to localStorage
       const fileStates = JSON.parse(localStorage.getItem('chatFileStates') || '{}')
       fileStates[selectedChat.id] = {
@@ -597,7 +595,7 @@ ${msg.content}
                         className="hidden"
                       />
                       <Button
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => [fileInputRef.current?.click(), handleFileUpload]}
                         variant="outline"
                         className="flex items-center gap-2 border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 transition-all duration-200 h-10"
                       >

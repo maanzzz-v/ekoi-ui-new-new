@@ -199,7 +199,7 @@ class SimplifiedApiService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-      const response = await fetch(`${this.baseUrl}/health`, {
+      const response = await fetch(`${this.baseUrl}/api/v1/health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -646,11 +646,10 @@ class SimplifiedApiService {
    * Upload a job description file and associate it with a chat session
    * POST /api/v1/jd/upload
    */
-  async uploadJobDescription(sessionId: string, file: File): Promise<JDUploadResponse> {
+  /*async uploadJobDescription(sessionId: string, file: File): Promise<JDUploadResponse> {
     try {
       // First check if backend is available
       const isBackendAvailable = await this.checkBackendHealth();
-      
       if (!isBackendAvailable) {
         // Return mock response when backend is not available
         console.warn('Backend not available, using mock response for JD upload');
@@ -683,18 +682,36 @@ class SimplifiedApiService {
       console.error('Error uploading job description:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to upload job description');
     }
+  }*/
+  async uploadJobDescription(sessionId: string, file: File): Promise<JDUploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${this.baseUrl}/api/v1/jd/upload?session_id=${encodeURIComponent(sessionId)}`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Upload failed:', response.status, errorText);
+      throw new Error(`Upload failed: ${response.status} - ${errorText}`);
+    }
+
+    return await response.json();
   }
 
   /**
    * Search for resumes matching the uploaded job description
    * POST /api/v1/jd/search
    */
-  async searchWithJobDescription(request: JDSearchRequest): Promise<JDSearchResponse> {
+  /*async searchWithJobDescription(request: JDSearchRequest): Promise<JDSearchResponse> {
     try {
       // Check if backend is available
+      console.log("hello")
       const isBackendAvailable = await this.checkBackendHealth();
-      
-      if (!isBackendAvailable) {
+      console.log("sahdgfq", isBackendAvailable)
+      /*if (!isBackendAvailable) {
         // Return mock response when backend is not available
         console.warn('Backend not available, using mock response for JD search');
         return {
@@ -731,7 +748,66 @@ class SimplifiedApiService {
           success: true
         };
       }
+      console.log("request: ", request)
+      const response = await fetch(`${this.baseUrl}/api/v1/jd/search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+      console.log("response: ", response.body)
+      if (!response.ok) {
+        console.log("error1")
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.detail || `JD search failed: ${response.status}`);
+      }
+      console.log("response 2: ", await response.json())
+      return await response.json();
+    } catch (error) {
+      console.log("error2")
+      console.error('Error searching with job description:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to search with job description');
+    }
+  }*/
+/* async searchWithJobDescription(request: JDSearchRequest): Promise<JDSearchResponse> {
+  try {
+    // Check if backend is available
+    console.log("Starting JD search request");
+    const isBackendAvailable = await this.checkBackendHealth();
+    console.log("Backend availability:", isBackendAvailable);
 
+    console.log("Sending request:", request);
+    const response = await fetch(`${this.baseUrl}/api/v1/jd/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    console.log("Response status:", response.status, response.statusText);
+
+    // Read the response body once and store it
+    const responseData = await response.json();
+    console.log("Response data:", responseData);
+
+    if (!response.ok) {
+      console.log("Request failed with status:", response.status);
+      const errorMessage = responseData.error || responseData.detail || `JD search failed: ${response.status}`;
+      throw new Error(errorMessage);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error('Error searching with job description:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to search with job description');
+  }
+}*/
+  async searchWithJobDescription(request: JDSearchRequest): Promise<JDSearchResponse> {
+    try {
+      console.log("Starting JD search request with:", request);
+      
       const response = await fetch(`${this.baseUrl}/api/v1/jd/search`, {
         method: 'POST',
         headers: {
@@ -745,10 +821,25 @@ class SimplifiedApiService {
         throw new Error(errorData.error || errorData.detail || `JD search failed: ${response.status}`);
       }
 
-      return await response.json();
+      const responseData = await response.json();
+      console.log("Raw JD search response:", responseData);
+
+      // FIXED: Don't transform the response, use it directly since it already matches the expected structure
+      // Just ensure matches is always an array (defensive programming)
+      if (!Array.isArray(responseData.matches)) {
+        console.warn("Matches is not an array, converting to empty array");
+        responseData.matches = [];
+      }
+
+      // Ensure total_results matches the actual matches length
+      responseData.total_results = responseData.matches.length;
+
+      console.log("Returning JD search response with matches count:", responseData.matches.length);
+      return responseData;
+
     } catch (error) {
       console.error('Error searching with job description:', error);
-      throw new Error(error instanceof Error ? error.message : 'Failed to search with job description');
+      throw error;
     }
   }
 
