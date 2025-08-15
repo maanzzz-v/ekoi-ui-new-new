@@ -1,11 +1,161 @@
 /**
- * Simplified API service using the refined endpoint structure
- * Clean integration with simplified backend endpoints for optimal UI experience
+ * Updated API service to connect with all working backend endpoints
+ * Complete integration with Chat UI functionality
  */
 
 import config from './config';
 
 const API_BASE_URL = config.api.baseUrl;
+
+// ============================
+// Enhanced Session Management Types
+// ============================
+
+export interface ChatMessage {
+  id: string;
+  type: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+  metadata?: {
+    search_results?: string[];
+    search_metadata?: any;
+    total_results?: number;
+  };
+}
+
+export interface ChatSession {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  messages: ChatMessage[];
+  context: {
+    jd_uploaded?: boolean;
+    jd_filename?: string;
+    jd_id?: string;
+    last_search?: {
+      query: string;
+      results: string[];
+      total_results: number;
+    };
+  };
+  is_active: boolean;
+}
+
+export interface CreateSessionRequest {
+  title?: string;
+  initial_message?: string;
+  agent_id?: string;
+}
+
+export interface CreateSessionResponse {
+  session: ChatSession;
+  success: boolean;
+  message: string;
+}
+
+export interface SessionsListResponse {
+  sessions: ChatSession[];
+  total: number;
+  success: boolean;
+}
+
+export interface SessionResponse {
+  session: ChatSession;
+  success: boolean;
+  message: string;
+}
+
+// ============================
+// Enhanced Search Types
+// ============================
+
+export interface SearchRequest {
+  message: string;
+  top_k?: number;
+  filters?: Record<string, any>;
+}
+
+export interface SearchMatch {
+  id: string;
+  file_name: string;
+  score: number;
+  extracted_info: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    skills: string[];
+    experience: any[];
+    education?: any[];
+    summary?: string;
+  };
+  relevant_text?: string;
+}
+
+export interface UIComponents {
+  candidate_cards: Array<{
+    id: string;
+    rank: number;
+    score: number;
+    name: string;
+    title: string;
+    skills: string[];
+    experience_summary: string;
+    match_highlights: string[];
+    file_name: string;
+  }>;
+  skill_tags: string[];
+  experience_chart: {
+    Junior: number;
+    'Mid-level': number;
+    Senior: number;
+    Lead: number;
+  };
+  quality_indicators: {
+    total_matches: number;
+    high_quality: number;
+    average_score: number;
+    consistency: number;
+  };
+  search_insights: {
+    detected_domains: string[];
+    technical_depth: string;
+    intent_confidence: number;
+  };
+}
+
+export interface ConversationFlow {
+  next_suggestions: string[];
+  follow_up_questions: string[];
+  refinement_options: string[];
+  flow_type: string;
+}
+
+export interface QuickAction {
+  label: string;
+  action: string;
+  target?: string;
+  query?: string;
+}
+
+export interface SearchResponse {
+  message: string;
+  query: string;
+  original_message: string;
+  matches: SearchMatch[];
+  total_results: number;
+  success: boolean;
+  session_id?: string;
+  ui_components?: UIComponents;
+  conversation_flow?: ConversationFlow;
+  quick_actions?: QuickAction[];
+  response_metadata?: {
+    response_type: string;
+    confidence_level: string;
+    search_quality: any;
+    timestamp: string;
+  };
+}
 
 // ============================
 // JD Upload Types
@@ -40,14 +190,21 @@ export interface JDSearchResponse {
 export interface JDFollowUpRequest {
   session_id: string;
   question: string;
+  previous_search_results?: any[];
 }
 
 export interface JDFollowUpResponse {
   session_id: string;
   question: string;
   answer: string;
-  candidates_analyzed: number;
-  jd_filename: string;
+  ui_components?: {
+    show_analysis: boolean;
+    candidate_comparison: boolean;
+    detailed_view: boolean;
+  };
+  conversation_flow?: {
+    next_suggestions: string[];
+  };
   success: boolean;
 }
 
@@ -65,91 +222,26 @@ export interface JDSearchResultsResponse {
 }
 
 // ============================
-// Simplified Types
-// ============================
-
-export interface SearchRequest {
-  message: string;
-  top_k?: number;
-  filters?: Record<string, any>;
-}
-
-export interface SearchMatch {
-  id: string;
-  file_name: string;
-  score: number;
-  extracted_info: {
-    name?: string;
-    skills: string[];
-    experience: any[];
-  };
-  relevant_text?: string;
-}
-
-export interface SearchResponse {
-  message: string;
-  query: string;
-  original_message: string;
-  matches: SearchMatch[];
-  total_results: number;
-  success: boolean;
-}
-
-// ============================
-// Session Management Types
-// ============================
-
-export interface ChatMessage {
-  id: string;
-  type: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-}
-
-export interface ChatSession {
-  id: string;
-  title: string;
-  created_at: string;
-  updated_at: string;
-  messages: ChatMessage[];
-}
-
-export interface CreateSessionRequest {
-  title?: string;
-  initial_message?: string;
-  agent_id?: string;
-}
-
-export interface CreateSessionResponse {
-  success: boolean;
-  session: ChatSession;
-  message?: string;
-}
-
-export interface SessionsListResponse {
-  success: boolean;
-  data: ChatSession[];
-}
-
-export interface SessionResponse {
-  success: boolean;
-  data: ChatSession;
-}
-
-// ============================
 // Follow-up Types
 // ============================
 
 export interface FollowUpRequest {
   question: string;
+  previous_search_results?: any[];
 }
 
 export interface FollowUpResponse {
   session_id: string;
   question: string;
   answer: string;
+  ui_components?: any;
+  conversation_flow?: any;
   success: boolean;
 }
+
+// ============================
+// Session Management Types
+// ============================
 
 // ============================
 // File Upload Types
@@ -225,45 +317,6 @@ class SimplifiedApiService {
    */
   async chatSearch(request: SearchRequest): Promise<SearchResponse> {
     try {
-      // Check if backend is available
-      const isBackendAvailable = await this.checkBackendHealth();
-      
-      if (!isBackendAvailable) {
-        // Return mock response when backend is not available
-        console.warn('Backend not available, using mock response for chat search');
-        return {
-          message: "Found candidates (mock data)",
-          query: request.message,
-          original_message: request.message,
-          matches: [
-            {
-              id: `candidate_${Date.now()}_1`,
-              file_name: "candidate1.pdf",
-              score: 0.92,
-              extracted_info: {
-                name: "John Smith",
-                skills: ["React", "Node.js", "TypeScript", "Python"],
-                experience: ["5 years full-stack development", "Senior Software Engineer"]
-              },
-              relevant_text: "Experienced full-stack developer with React and Node.js expertise"
-            },
-            {
-              id: `candidate_${Date.now()}_2`,
-              file_name: "candidate2.pdf",
-              score: 0.87,
-              extracted_info: {
-                name: "Jane Doe",
-                skills: ["Vue.js", "Django", "PostgreSQL", "AWS"],
-                experience: ["4 years backend development", "Software Engineer"]
-              },
-              relevant_text: "Backend specialist with Django and cloud infrastructure experience"
-            }
-          ],
-          total_results: 2,
-          success: true
-        };
-      }
-
       const response = await fetch(`${this.baseUrl}/api/v1/chat/search`, {
         method: 'POST',
         headers: {
@@ -306,7 +359,7 @@ class SimplifiedApiService {
         body: JSON.stringify({
           title: request.title || `Chat ${new Date().toLocaleString()}`,
           initial_message: request.initial_message,
-          agent_id: request.agent_id
+          user_id: request.agent_id || "anonymous"
         }),
       });
 
@@ -316,11 +369,7 @@ class SimplifiedApiService {
       }
 
       const data = await response.json();
-      return { 
-        success: true, 
-        session: data.session,
-        message: data.message 
-      };
+      return data as CreateSessionResponse;
     } catch (error) {
       console.error('Error creating chat session:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to create chat session');
@@ -331,9 +380,15 @@ class SimplifiedApiService {
    * List all sessions with pagination
    * GET /api/v1/chat/sessions
    */
-  async getChatSessions(): Promise<SessionsListResponse> {
+  async getChatSessions(limit: number = 50, skip: number = 0, activeOnly: boolean = true): Promise<SessionsListResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/v1/chat/sessions`, {
+      const queryParams = new URLSearchParams({
+        limit: limit.toString(),
+        skip: skip.toString(),
+        active_only: activeOnly.toString()
+      });
+
+      const response = await fetch(`${this.baseUrl}/api/v1/chat/sessions?${queryParams}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -346,11 +401,15 @@ class SimplifiedApiService {
       }
 
       const data = await response.json();
-      return { success: true, data: Array.isArray(data) ? data : data.sessions || [] };
+      return {
+        sessions: Array.isArray(data.sessions) ? data.sessions : data,
+        total: data.total || (Array.isArray(data.sessions) ? data.sessions.length : data.length),
+        success: true
+      };
     } catch (error) {
       console.error('Error getting chat sessions:', error);
       // Return empty array for graceful degradation
-      return { success: false, data: [] };
+      return { sessions: [], total: 0, success: false };
     }
   }
 
@@ -373,7 +432,11 @@ class SimplifiedApiService {
       }
 
       const data = await response.json();
-      return { success: true, data: data.session || data };
+      return {
+        session: data.session || data,
+        success: true,
+        message: data.message || 'Session retrieved successfully'
+      };
     } catch (error) {
       console.error('Error getting chat session:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to get chat session');
@@ -386,45 +449,6 @@ class SimplifiedApiService {
    */
   async searchInSession(sessionId: string, request: SearchRequest): Promise<SearchResponse> {
     try {
-      // Check if backend is available
-      const isBackendAvailable = await this.checkBackendHealth();
-      
-      if (!isBackendAvailable) {
-        // Return mock response when backend is not available
-        console.warn('Backend not available, using mock response for session search');
-        return {
-          message: "Found candidates in session (mock data)",
-          query: request.message,
-          original_message: request.message,
-          matches: [
-            {
-              id: `candidate_${Date.now()}_1`,
-              file_name: "candidate1.pdf",
-              score: 0.92,
-              extracted_info: {
-                name: "John Smith",
-                skills: ["React", "Node.js", "TypeScript", "Python"],
-                experience: ["5 years full-stack development", "Senior Software Engineer"]
-              },
-              relevant_text: "Experienced full-stack developer with React and Node.js expertise"
-            },
-            {
-              id: `candidate_${Date.now()}_2`,
-              file_name: "candidate2.pdf",
-              score: 0.87,
-              extracted_info: {
-                name: "Jane Doe",
-                skills: ["Vue.js", "Django", "PostgreSQL", "AWS"],
-                experience: ["4 years backend development", "Software Engineer"]
-              },
-              relevant_text: "Backend specialist with Django and cloud infrastructure experience"
-            }
-          ],
-          total_results: 2,
-          success: true
-        };
-      }
-
       const response = await fetch(`${this.baseUrl}/api/v1/chat/sessions/${sessionId}/search`, {
         method: 'POST',
         headers: {
@@ -467,7 +491,8 @@ class SimplifiedApiService {
         throw new Error(errorData.error || errorData.detail || `Session deletion failed: ${response.status}`);
       }
 
-      return { success: true, message: 'Session deleted successfully' };
+      const data = await response.json();
+      return { success: true, message: data.message || 'Session deleted successfully' };
     } catch (error) {
       console.error('Error deleting chat session:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to delete chat session');
@@ -490,7 +515,8 @@ class SimplifiedApiService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          question: request.question
+          question: request.question,
+          previous_search_results: request.previous_search_results || []
         }),
       });
 
@@ -683,22 +709,31 @@ class SimplifiedApiService {
       throw new Error(error instanceof Error ? error.message : 'Failed to upload job description');
     }
   }*/
+  /**
+   * Upload a job description file and associate it with a chat session
+   * POST /api/v1/jd/upload
+   */
   async uploadJobDescription(sessionId: string, file: File): Promise<JDUploadResponse> {
-    const formData = new FormData();
-    formData.append('file', file);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
 
-    const response = await fetch(`${this.baseUrl}/api/v1/jd/upload?session_id=${encodeURIComponent(sessionId)}`, {
-      method: 'POST',
-      body: formData,
-    });
+      const response = await fetch(`${this.baseUrl}/api/v1/jd/upload?session_id=${encodeURIComponent(sessionId)}`, {
+        method: 'POST',
+        body: formData,
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Upload failed:', response.status, errorText);
-      throw new Error(`Upload failed: ${response.status} - ${errorText}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Upload failed:', response.status, errorText);
+        throw new Error(`Upload failed: ${response.status} - ${errorText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error uploading job description:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to upload job description');
     }
-
-    return await response.json();
   }
 
   /**
@@ -818,14 +853,15 @@ class SimplifiedApiService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error("JD search failed:", response.status, errorData);
         throw new Error(errorData.error || errorData.detail || `JD search failed: ${response.status}`);
       }
 
       const responseData = await response.json();
       console.log("Raw JD search response:", responseData);
 
-      // FIXED: Don't transform the response, use it directly since it already matches the expected structure
-      // Just ensure matches is always an array (defensive programming)
+      // FIXED: Ensure the response structure matches what's expected
+      // The backend should return matches array directly
       if (!Array.isArray(responseData.matches)) {
         console.warn("Matches is not an array, converting to empty array");
         responseData.matches = [];
@@ -849,22 +885,6 @@ class SimplifiedApiService {
    */
   async askJDFollowUp(request: JDFollowUpRequest): Promise<JDFollowUpResponse> {
     try {
-      // Check if backend is available
-      const isBackendAvailable = await this.checkBackendHealth();
-      
-      if (!isBackendAvailable) {
-        // Return mock response when backend is not available
-        console.warn('Backend not available, using mock response for JD follow-up');
-        return {
-          session_id: request.session_id,
-          question: request.question,
-          answer: "This is a mock response for your follow-up question. The candidates were selected based on their strong match with the job requirements, particularly their technical skills and experience level.",
-          candidates_analyzed: 2,
-          jd_filename: "mock_job_description.pdf",
-          success: true
-        };
-      }
-
       const response = await fetch(`${this.baseUrl}/api/v1/jd/followup`, {
         method: 'POST',
         headers: {
@@ -872,7 +892,8 @@ class SimplifiedApiService {
         },
         body: JSON.stringify({
           session_id: request.session_id,
-          question: request.question
+          question: request.question,
+          previous_search_results: request.previous_search_results || []
         }),
       });
 
@@ -894,49 +915,6 @@ class SimplifiedApiService {
    */
   async getJDSearchResults(sessionId: string): Promise<JDSearchResultsResponse> {
     try {
-      // Check if backend is available
-      const isBackendAvailable = await this.checkBackendHealth();
-      
-      if (!isBackendAvailable) {
-        // Return mock response when backend is not available
-        console.warn('Backend not available, using mock response for JD search results');
-        return {
-          session_id: sessionId,
-          search_results: {
-            jd_id: `jd_${Date.now()}`,
-            jd_text: "Mock job description text for download demonstration",
-            jd_filename: "mock_job_description.pdf",
-            matches: [
-              {
-                id: `candidate_${Date.now()}_1`,
-                file_name: "candidate1.pdf",
-                score: 0.92,
-                extracted_info: {
-                  name: "John Smith",
-                  skills: ["React", "Node.js", "TypeScript", "Python"],
-                  experience: ["5 years full-stack development", "Senior Software Engineer"]
-                },
-                relevant_text: "Experienced full-stack developer with React and Node.js expertise"
-              },
-              {
-                id: `candidate_${Date.now()}_2`,
-                file_name: "candidate2.pdf",
-                score: 0.87,
-                extracted_info: {
-                  name: "Jane Doe",
-                  skills: ["Vue.js", "Django", "PostgreSQL", "AWS"],
-                  experience: ["4 years backend development", "Software Engineer"]
-                },
-                relevant_text: "Backend specialist with Django and cloud infrastructure experience"
-              }
-            ],
-            total_matches: 2,
-            search_timestamp: new Date().toISOString()
-          },
-          success: true
-        };
-      }
-
       const response = await fetch(`${this.baseUrl}/api/v1/jd/session/${sessionId}/results`, {
         method: 'GET',
         headers: {
@@ -953,6 +931,36 @@ class SimplifiedApiService {
     } catch (error) {
       console.error('Error getting JD search results:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to get JD search results');
+    }
+  }
+
+  /**
+   * Download shortlisted candidates as ZIP file
+   * GET /api/v1/jd/session/{session_id}/download
+   */
+  async downloadJDResults(sessionId: string, topN: number = 10, format: string = 'zip'): Promise<Blob> {
+    try {
+      const queryParams = new URLSearchParams({
+        top_n: topN.toString(),
+        format: format
+      });
+
+      const response = await fetch(`${this.baseUrl}/api/v1/jd/session/${sessionId}/download?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/zip, application/octet-stream',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text().catch(() => 'Download failed');
+        throw new Error(`Download failed: ${response.status} - ${errorData}`);
+      }
+
+      return await response.blob();
+    } catch (error) {
+      console.error('Error downloading JD results:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to download JD results');
     }
   }
 
@@ -974,7 +982,8 @@ class SimplifiedApiService {
         throw new Error(errorData.error || errorData.detail || `JD deletion failed: ${response.status}`);
       }
 
-      return { success: true, message: 'Job description deleted successfully' };
+      const data = await response.json();
+      return { success: true, message: data.message || 'Job description deleted successfully' };
     } catch (error) {
       console.error('Error deleting job description:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to delete job description');
@@ -1050,9 +1059,9 @@ export const resumeApi = {
   // Core search
   chatSearch: (request: SearchRequest) => simplifiedApiService.chatSearch(request),
   
-  // Session management
+  // Session management - Updated to match new API endpoints
   createChatSession: (request?: CreateSessionRequest) => simplifiedApiService.createChatSession(request),
-  getChatSessions: () => simplifiedApiService.getChatSessions(),
+  getChatSessions: (limit?: number, skip?: number, activeOnly?: boolean) => simplifiedApiService.getChatSessions(limit, skip, activeOnly),
   getChatSession: (sessionId: string) => simplifiedApiService.getChatSession(sessionId),
   searchInSession: (sessionId: string, request: SearchRequest) => simplifiedApiService.searchInSession(sessionId, request),
   deleteChatSession: (sessionId: string) => simplifiedApiService.deleteChatSession(sessionId),
@@ -1060,14 +1069,15 @@ export const resumeApi = {
   // Follow-up questions
   askFollowUp: (sessionId: string, request: FollowUpRequest) => simplifiedApiService.askFollowUp(sessionId, request),
   
-  // Chat messaging
+  // Chat messaging (legacy support)
   sendChatMessage: (sessionId: string, message: { content: string; type: 'user' }) => simplifiedApiService.sendChatMessage(sessionId, message),
   
-  // JD Upload and Search
+  // JD Upload and Search - Updated endpoints
   uploadJobDescription: (sessionId: string, file: File) => simplifiedApiService.uploadJobDescription(sessionId, file),
   searchWithJobDescription: (request: JDSearchRequest) => simplifiedApiService.searchWithJobDescription(request),
   askJDFollowUp: (request: JDFollowUpRequest) => simplifiedApiService.askJDFollowUp(request),
   getJDSearchResults: (sessionId: string) => simplifiedApiService.getJDSearchResults(sessionId),
+  downloadJDResults: (sessionId: string, topN?: number, format?: string) => simplifiedApiService.downloadJDResults(sessionId, topN, format),
   deleteJobDescription: (sessionId: string) => simplifiedApiService.deleteJobDescription(sessionId),
   
   // File management

@@ -31,7 +31,7 @@ interface ChatTabProps {
 // Add new interface for session with file state
 interface ExtendedChatSession extends ChatSession {
   hasUploadedFile?: boolean;
-  fileName?: string;
+  fileName?: string | null;
 }
 
 export function ChatTab({ agent }: ChatTabProps) {
@@ -41,16 +41,18 @@ export function ChatTab({ agent }: ChatTabProps) {
   const [isSending, setIsSending] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [isProcessingFile, setIsProcessingFile] = useState(false)
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking')
+  const [lastError, setLastError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null) 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Sample starter queries
+  // Enhanced starter queries for better UX
   const starterQueries = [
-    "Find Python developers with 5 years experience",
-    "Show me frontend developers with React skills",
-    "Why were these candidates selected?",
-    "Compare the top 3 candidates"
+    "Find Python developers with 5+ years experience",
+    "Show me senior React developers with AWS skills",
+    "Find full-stack developers for startup environment", 
+    "Search for data scientists with machine learning experience"
   ]
 
   // Add scroll to bottom effect
@@ -60,7 +62,45 @@ export function ChatTab({ agent }: ChatTabProps) {
 
   useEffect(() => {
     loadChatSessions()
+    checkBackendConnection()
   }, [])
+
+  // Add effect to check backend connection periodically
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        setConnectionStatus('checking')
+        const isHealthy = await resumeApi.healthCheck()
+        setConnectionStatus(isHealthy ? 'connected' : 'disconnected')
+        if (isHealthy) {
+          setLastError(null)
+        }
+      } catch (error) {
+        setConnectionStatus('disconnected')
+        setLastError('Unable to connect to backend server')
+      }
+    }
+
+    checkConnection()
+    const interval = setInterval(checkConnection, 30000) // Check every 30 seconds
+    return () => clearInterval(interval)
+  }, [])
+
+  const checkBackendConnection = async () => {
+    try {
+      setConnectionStatus('checking')
+      const isHealthy = await resumeApi.healthCheck()
+      setConnectionStatus(isHealthy ? 'connected' : 'disconnected')
+      if (!isHealthy) {
+        setLastError('Backend server is not responding')
+      } else {
+        setLastError(null)
+      }
+    } catch (error) {
+      setConnectionStatus('disconnected')
+      setLastError('Unable to connect to backend server')
+    }
+  }
 
   // Add effect to load file states from localStorage
   useEffect(() => {
@@ -80,18 +120,44 @@ export function ChatTab({ agent }: ChatTabProps) {
     loadFileStates()
   }, [])
 
-  // Update loadChatSessions to preserve file states
+  // FIXED: Load session details when selectedChat changes
+  useEffect(() => {
+    const loadSessionDetails = async () => {
+      if (selectedChat && selectedChat.id && selectedChat.messages.length === 0) {
+        // Only load if the session has no messages (fresh load)
+        try {
+          console.log("Loading session details for:", selectedChat.id);
+          const response = await resumeApi.getChatSession(selectedChat.id)
+          if (response.success && response.session) {
+            // Update the selected chat with the full session data including messages
+            const sessionWithHistory = {
+              ...response.session,
+              hasUploadedFile: selectedChat.hasUploadedFile,
+              fileName: selectedChat.fileName
+            }
+            console.log("Session loaded with", sessionWithHistory.messages?.length || 0, "messages");
+            setSelectedChat(sessionWithHistory)
+          }
+        } catch (error) {
+          console.error('Failed to load session details:', error)
+        }
+      }
+    }
+    loadSessionDetails()
+  }, [selectedChat?.id]) // Only trigger when the session ID changes
+
+  // Update loadChatSessions to use new API structure
   const loadChatSessions = async () => {
     try {
-      const response = await resumeApi.getChatSessions()
-      if (response.success && Array.isArray(response.data)) {
-        // Load saved file states
+      const response = await resumeApi.getChatSessions(50, 0, true)
+      if (response.success && Array.isArray(response.sessions)) {
+        // Load saved file states from localStorage
         const fileStates = JSON.parse(localStorage.getItem('chatFileStates') || '{}')
         
-        const sessionsWithFileStates = response.data.map(session => ({
+        const sessionsWithFileStates = response.sessions.map(session => ({
           ...session,
-          hasUploadedFile: fileStates[session.id]?.hasUploadedFile || false,
-          fileName: fileStates[session.id]?.fileName || null
+          hasUploadedFile: session.context?.jd_uploaded || fileStates[session.id]?.hasUploadedFile || false,
+          fileName: session.context?.jd_filename || fileStates[session.id]?.fileName || null
         }))
         
         setSessions(sessionsWithFileStates)
@@ -108,16 +174,14 @@ export function ChatTab({ agent }: ChatTabProps) {
     try {
       const response = await resumeApi.createChatSession({
         title: `Chat ${new Date().toLocaleString()}`,
-        agent_id: agent?.id
+        initial_message: undefined
       })
       
       if (response.success && response.session) {
-        // The API returns the session data under 'session' key, not 'data'
         const newSession = {
           ...response.session,
-          id: response.session.id || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          title: response.session.title || `Chat ${new Date().toLocaleString()}`,
-          messages: response.session.messages || []
+          hasUploadedFile: false,
+          fileName: null
         }
         setSessions(prev => [newSession, ...prev])
         setSelectedChat(newSession)
@@ -131,7 +195,11 @@ export function ChatTab({ agent }: ChatTabProps) {
         title: `Chat ${new Date().toLocaleString()}`,
         messages: [],
         created_at: now,
-        updated_at: now
+        updated_at: now,
+        context: {},
+        is_active: true,
+        hasUploadedFile: false,
+        fileName: null
       }
       setSessions(prev => [fallbackSession, ...prev])
       setSelectedChat(fallbackSession)
@@ -160,7 +228,6 @@ export function ChatTab({ agent }: ChatTabProps) {
     if (!selectedChat) {
       try {
         await createNewSession()
-        // Keep the message for when the session is created
         return
       } catch (error) {
         console.error('Failed to create session:', error)
@@ -191,126 +258,102 @@ export function ChatTab({ agent }: ChatTabProps) {
         "what are their strengths", 
         "compare these candidates",
         "what are their experience levels",
-        "what are their technical skills"
+        "what are their technical skills",
+        "why is",
+        "who has the most",
+        "which candidate"
       ]
       
       const isFollowUp = followUpQuestions.some(q => 
         messageContent.toLowerCase().includes(q)
       )
 
-      let response;
+      let assistantMessage: ChatMessage;
       
       if (isFollowUp && selectedChat.messages.length > 1) {
-        // Check if we have a job description uploaded for JD follow-up
+        // Use follow-up endpoints
         if (selectedChat.hasUploadedFile) {
           // Use JD follow-up endpoint
-          response = await resumeApi.askJDFollowUp({
+          const response = await resumeApi.askJDFollowUp({
             session_id: selectedChat.id,
             question: messageContent
           })
           
-          const assistantMessage: ChatMessage = {
+          assistantMessage = {
             id: `assistant-${Date.now()}`,
             type: 'assistant',
             content: response.answer,
             timestamp: new Date().toISOString()
           }
-
-          setSelectedChat(prev => prev ? {
-            ...prev,
-            messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
-          } : null)
         } else {
           // Use regular follow-up endpoint
-          response = await resumeApi.askFollowUp(selectedChat.id, {
+          const response = await resumeApi.askFollowUp(selectedChat.id, {
             question: messageContent
           })
           
-          const assistantMessage: ChatMessage = {
+          assistantMessage = {
             id: `assistant-${Date.now()}`,
             type: 'assistant',
             content: response.answer,
             timestamp: new Date().toISOString()
           }
-
-          setSelectedChat(prev => prev ? {
-            ...prev,
-            messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
-          } : null)
         }
       } else {
-        // Check if we have a job description uploaded for JD search
+        // Use search endpoints
         if (selectedChat.hasUploadedFile) {
-          // Use JD search endpoint
+          // Use JD search endpoint - FIXED: proper request format
           const searchResponse = await resumeApi.searchWithJobDescription({
             session_id: selectedChat.id,
-            top_k: 10,
-            filters: {
-              query: messageContent // Include the search query in filters
-            }
+            top_k: 10
           })
           
-          let responseContent = `Found ${searchResponse.total_results} candidates matching the job description and your query.`
-          
-          if (searchResponse.matches && searchResponse.matches.length > 0) {
-            responseContent += "\n\nTop candidates:\n"
-            searchResponse.matches.slice(0, 3).forEach((match, index) => {
-              responseContent += `\n${index + 1}. ${match.extracted_info.name || 'Candidate'} (Score: ${(match.score * 100).toFixed(1)}%)`
-              if (match.extracted_info.skills.length > 0) {
-                responseContent += `\n   Skills: ${match.extracted_info.skills.slice(0, 5).join(', ')}`
-              }
-            })
-          }
-
-          const assistantMessage: ChatMessage = {
+          assistantMessage = {
             id: `assistant-${Date.now()}`,
             type: 'assistant',
-            content: responseContent,
+            content: formatSearchResults(searchResponse),
             timestamp: new Date().toISOString()
           }
-
-          setSelectedChat(prev => prev ? {
-            ...prev,
-            messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
-          } : null)
         } else {
-          // Use regular search endpoint with session
+          // Use session search endpoint
           const searchResponse = await resumeApi.searchInSession(selectedChat.id, {
             message: messageContent
           })
           
-          let responseContent = searchResponse.message || `Found ${searchResponse.total_results} candidates.`
-          
-          if (searchResponse.matches && searchResponse.matches.length > 0) {
-            responseContent += "\n\nTop candidates:\n"
-            searchResponse.matches.slice(0, 3).forEach((match, index) => {
-              responseContent += `\n${index + 1}. ${match.extracted_info.name || 'Candidate'} (Score: ${(match.score * 100).toFixed(1)}%)`
-              if (match.extracted_info.skills.length > 0) {
-                responseContent += `\n   Skills: ${match.extracted_info.skills.slice(0, 5).join(', ')}`
-              }
-            })
-          }
-
-          const assistantMessage: ChatMessage = {
+          assistantMessage = {
             id: `assistant-${Date.now()}`,
             type: 'assistant',
-            content: responseContent,
+            content: formatSearchResults(searchResponse),
             timestamp: new Date().toISOString()
           }
-
-          setSelectedChat(prev => prev ? {
-            ...prev,
-            messages: [...prev.messages.slice(0, -1), userMessage, assistantMessage]
-          } : null)
         }
       }
+
+      // Update the chat with the response
+      setSelectedChat(prev => prev ? {
+        ...prev,
+        messages: [...prev.messages, assistantMessage]
+      } : null)
+
+      // FIXED: Also update the sessions array to persist messages when switching
+      setSessions(prev => prev.map(session => 
+        session.id === selectedChat.id 
+          ? { 
+              ...session, 
+              messages: [...(session.messages || []), userMessage, assistantMessage],
+              updated_at: new Date().toISOString()
+            }
+          : session
+      ))
+
     } catch (error) {
       console.error('Failed to send message:', error)
-      // Add error message
+      setLastError(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      
+      // Add error message to chat
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
         type: 'assistant',
-        content: "Sorry, I couldn't process your request. Please try again.",
+        content: `Sorry, I couldn't process your request. ${connectionStatus === 'disconnected' ? 'The backend server appears to be disconnected.' : 'Please try again.'}`,
         timestamp: new Date().toISOString()
       }
 
@@ -318,6 +361,17 @@ export function ChatTab({ agent }: ChatTabProps) {
         ...prev,
         messages: [...prev.messages, errorMessage]
       } : null)
+
+      // FIXED: Also update the sessions array for error messages
+      setSessions(prev => prev.map(session => 
+        session.id === selectedChat.id 
+          ? { 
+              ...session, 
+              messages: [...(session.messages || []), userMessage, errorMessage],
+              updated_at: new Date().toISOString()
+            }
+          : session
+      ))
     } finally {
       setIsSending(false)
     }
@@ -335,7 +389,44 @@ export function ChatTab({ agent }: ChatTabProps) {
     inputRef.current?.focus()
   }
 
-  // Update handleFileUpload to persist file state
+  // Helper function to format search results for better display
+  const formatSearchResults = (response: any): string => {
+    console.log("Formatting search results:", response);
+    
+    if (!response.matches || response.matches.length === 0) {
+      return response.message || "No candidates found matching your criteria. Try adjusting your search terms or upload different resumes to the system.";
+    }
+
+    let formattedResult = response.message || `Found ${response.total_results} candidates matching your search.`
+    
+    formattedResult += "\n\n🎯 **Top Candidates:**\n"
+    
+    response.matches.slice(0, 5).forEach((match: any, index: number) => {
+      const name = match.extracted_info?.name || `Candidate ${index + 1}`
+      const score = (match.score * 100).toFixed(1)
+      const skills = match.extracted_info?.skills?.slice(0, 6).join(', ') || 'No skills listed'
+      const experience = Array.isArray(match.extracted_info?.experience) 
+        ? match.extracted_info.experience[0]?.description || match.extracted_info.experience[0] || 'Experience not specified'
+        : match.extracted_info?.experience || 'Experience not specified'
+
+      formattedResult += `\n**${index + 1}. ${name}** (${score}% match)\n`
+      formattedResult += `   💼 ${experience}\n`
+      formattedResult += `   🛠️ Skills: ${skills}\n`
+      
+      if (match.relevant_text) {
+        const relevantSnippet = match.relevant_text.substring(0, 100) + '...'
+        formattedResult += `   📝 "${relevantSnippet}"\n`
+      }
+    })
+
+    if (response.total_results > 5) {
+      formattedResult += `\n... and ${response.total_results - 5} more candidates\n`
+    }
+
+    return formattedResult
+  }
+
+  // Update handleFileUpload to work with the new API
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file || !selectedChat) return
@@ -344,37 +435,55 @@ export function ChatTab({ agent }: ChatTabProps) {
       alert('Please select a PDF or TXT file')
       return
     }
+    
     setIsProcessingFile(true)
 
     try {
       // Upload to backend using the real API
       const response = await resumeApi.uploadJobDescription(selectedChat.id, file)
-      // Save file state to localStorage
+      
+      // Save file state to localStorage and update session
       const fileStates = JSON.parse(localStorage.getItem('chatFileStates') || '{}')
       fileStates[selectedChat.id] = {
         hasUploadedFile: true,
-        fileName: file.name
+        fileName: response.file_name
       }
       localStorage.setItem('chatFileStates', JSON.stringify(fileStates))
       
       // Update the session with file information
       setSessions(prev => prev.map(session => 
         session.id === selectedChat.id 
-          ? { ...session, hasUploadedFile: true, fileName: file.name }
+          ? { 
+              ...session, 
+              hasUploadedFile: true, 
+              fileName: response.file_name,
+              context: {
+                ...session.context,
+                jd_uploaded: true,
+                jd_filename: response.file_name,
+                jd_id: response.job_description_id
+              }
+            }
           : session
       ))
 
       setSelectedChat(prev => prev ? {
         ...prev,
         hasUploadedFile: true,
-        fileName: file.name
+        fileName: response.file_name,
+        context: {
+          ...prev.context,
+          jd_uploaded: true,
+          jd_filename: response.file_name,
+          jd_id: response.job_description_id
+        }
       } : null)
 
       // Add success message to chat
       const analysisMessage: ChatMessage = {
         id: `analysis-${Date.now()}`,
         type: 'assistant',
-        content: `Job description "${response.file_name}" uploaded successfully! I can now help you find candidates that match the requirements from this job description.`,
+        content: `Job description "${response.file_name}" uploaded successfully! I can now help you find candidates that match the requirements from this job description. Try asking: "Find the best candidates for this role" or "Show me candidates with the required skills."`,
         timestamp: new Date().toISOString()
       }
       
@@ -383,6 +492,17 @@ export function ChatTab({ agent }: ChatTabProps) {
         ...prev,
         messages: [...(prev.messages || []), analysisMessage]
       } : null)
+
+      // FIXED: Also update the sessions array to persist JD upload message
+      setSessions(prev => prev.map(session => 
+        session.id === selectedChat.id 
+          ? { 
+              ...session, 
+              messages: [...(session.messages || []), analysisMessage],
+              updated_at: new Date().toISOString()
+            }
+          : session
+      ))
       
     } catch (error) {
       console.error('Error processing file:', error)
@@ -401,42 +521,26 @@ export function ChatTab({ agent }: ChatTabProps) {
     }
 
     try {
-      let downloadContent = '';
-      
       if (selectedChat.hasUploadedFile) {
-        // Get JD search results from the backend
-        const results = await resumeApi.getJDSearchResults(selectedChat.id)
+        // Use the new download endpoint for JD results
+        const blob = await resumeApi.downloadJDResults(selectedChat.id, 10, 'zip')
         
-        // Create downloadable content for JD results
-        downloadContent = `Job Description Search Results
-        
-Session ID: ${results.session_id}
-Job Description ID: ${results.search_results.jd_id}
-Job Description File: ${results.search_results.jd_filename}
-Total Results: ${results.search_results.total_matches}
-Generated: ${new Date().toLocaleString()}
-
-Job Description:
-${results.search_results.jd_text}
-
-Search Results:
-${results.search_results.matches.map((match: any, index: number) => `
-${index + 1}. ${match.extracted_info.name || 'Candidate'}
-   Score: ${(match.score * 100).toFixed(1)}%
-   Skills: ${match.extracted_info.skills.join(', ')}
-   Experience: ${Array.isArray(match.extracted_info.experience) ? match.extracted_info.experience.join(', ') : (match.extracted_info.experience || 'Not specified')}
-   Location: ${match.extracted_info.location || 'Not specified'}
-   Education: ${match.extracted_info.education || 'Not specified'}
-   
-`).join('')}
-`;
+        // Create and trigger download
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `candidates-${selectedChat.id}-${new Date().toISOString().split('T')[0]}.zip`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
       } else {
-        // Create download content from chat messages for regular sessions
+        // Fallback: Create text summary from chat messages
         const searchMessages = selectedChat.messages.filter(msg => 
           msg.type === 'assistant' && msg.content.includes('candidates')
-        );
+        )
         
-        downloadContent = `Chat Session Search Results
+        const downloadContent = `Chat Session Search Results
         
 Session ID: ${selectedChat.id}
 Session Title: ${selectedChat.title}
@@ -448,19 +552,18 @@ ${index + 1}. [${msg.type.toUpperCase()}] ${new Date(msg.timestamp).toLocaleStri
 ${msg.content}
 
 `).join('')}
-`;
+`
+        
+        const blob = new Blob([downloadContent], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `chat-results-${selectedChat.id}-${new Date().toISOString().split('T')[0]}.txt`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
       }
-      
-      // Create and download the file
-      const blob = new Blob([downloadContent], { type: 'text/plain' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `jd-search-results-${selectedChat.id}-${new Date().toISOString().split('T')[0]}.txt`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
       
     } catch (error) {
       console.error('Error downloading results:', error)
@@ -480,10 +583,25 @@ ${msg.content}
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold text-gray-900">Chats</h2>
-            <Button size="sm" onClick={createNewSession}>
-              <Plus className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Connection Status Indicator */}
+              <div className={`w-2 h-2 rounded-full ${
+                connectionStatus === 'connected' ? 'bg-green-500' : 
+                connectionStatus === 'disconnected' ? 'bg-red-500' : 'bg-yellow-500'
+              }`} title={
+                connectionStatus === 'connected' ? 'Connected to backend' : 
+                connectionStatus === 'disconnected' ? 'Disconnected from backend' : 'Checking connection...'
+              } />
+              <Button size="sm" onClick={createNewSession} disabled={connectionStatus === 'disconnected'}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
+          {lastError && (
+            <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+              {lastError}
+            </div>
+          )}
           <Input
             placeholder="Search chats..."
             value={searchTerm}
@@ -501,7 +619,12 @@ ${msg.content}
                 className={`cursor-pointer transition-colors hover:bg-gray-50 ${
                   selectedChat?.id === session?.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''
                 } max-w-[80%]`}
-                onClick={() => setSelectedChat(session)}
+                onClick={() => {
+                  // FIXED: Only update if it's a different session
+                  if (selectedChat?.id !== session?.id) {
+                    setSelectedChat(session)
+                  }
+                }}
               >
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between space-x-2">
